@@ -782,7 +782,6 @@
     justify-content: center;
     touch-action: pan-y;
   }
-  .lightbox.open { display: flex; }
   .lightbox-img {
     max-width: 92vw;
     max-height: 88vh;
@@ -1338,6 +1337,106 @@ window.addEventListener('scroll', () => {
   });
   carousel.addEventListener('mouseleave', () => { if(isDragging) { isDragging = false; track.style.transition = ''; goTo(current); } });
 })();
+
+// ── LIGHTBOX
+document.addEventListener('DOMContentLoaded', function() {
+  var images = [
+    { src: 'img2.jpeg', alt: 'Butterfly Garden Party' },
+    { src: 'img8.jpeg', alt: 'Naomi Turns 50' },
+    { src: 'img5.jpeg', alt: 'Baby Shark 2nd Birthday' },
+    { src: 'img3.jpeg', alt: 'Rainbow Family Celebration' },
+    { src: 'img4.jpeg', alt: 'Enchanted Mermaid Theme' },
+    { src: 'img1.jpeg', alt: 'Toy Story Adventure' },
+    { src: 'img6.jpeg', alt: 'Pink Star Birthday Setup' },
+    { src: 'img7.jpeg', alt: 'Cake Smash Toy Story' }
+  ];
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightboxImg');
+  var lbClose = document.getElementById('lightboxClose');
+  var lbPrev = document.getElementById('lightboxPrev');
+  var lbNext = document.getElementById('lightboxNext');
+  var lbDots = document.getElementById('lightboxDots');
+  var lbCount = document.getElementById('lightboxCounter');
+  if (!lb) return;
+  var current = 0;
+  var touchStartX = 0;
+  var dragStartX = 0;
+  var dragging = false;
+
+  // Build dots
+  images.forEach(function(_, i) {
+    var d = document.createElement('button');
+    d.className = 'lightbox-dot';
+    d.addEventListener('click', function(e) { e.stopPropagation(); goTo(i); });
+    lbDots.appendChild(d);
+  });
+
+  function openLB(idx) {
+    current = idx;
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    render();
+  }
+  function closeLB() {
+    lb.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function goTo(idx) {
+    current = (idx + images.length) % images.length;
+    render();
+  }
+  function render() {
+    lbImg.style.opacity = '0';
+    setTimeout(function() {
+      lbImg.src = images[current].src;
+      lbImg.alt = images[current].alt;
+      lbImg.style.opacity = '1';
+    }, 100);
+    lbCount.textContent = (current + 1) + ' / ' + images.length;
+    var dots = lbDots.querySelectorAll('.lightbox-dot');
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+  }
+
+  // Gallery items click
+  document.querySelectorAll('.gallery-item').forEach(function(item, i) {
+    item.style.cursor = 'zoom-in';
+    item.addEventListener('click', function(e) { e.preventDefault(); openLB(i); });
+  });
+
+  // Buttons
+  lbClose.addEventListener('click', function(e) { e.stopPropagation(); closeLB(); });
+  lbPrev.addEventListener('click', function(e) { e.stopPropagation(); goTo(current - 1); });
+  lbNext.addEventListener('click', function(e) { e.stopPropagation(); goTo(current + 1); });
+
+  // Backdrop click
+  lb.addEventListener('click', function(e) { if (e.target === lb) closeLB(); });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (lb.style.display !== 'flex') return;
+    if (e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'Escape') closeLB();
+  });
+
+  // Touch swipe
+  lb.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+  }, {passive:true});
+
+  // Mouse drag swipe (desktop)
+  lb.addEventListener('mousedown', function(e) { dragStartX = e.clientX; dragging = true; e.preventDefault(); });
+  lb.addEventListener('mouseup', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    var diff = dragStartX - e.clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+  });
+  lb.addEventListener('mouseleave', function() { dragging = false; });
+});
+
 </script>
 
 <!-- LIGHTBOX -->
