@@ -329,7 +329,7 @@
   .gallery-item:nth-child(6) { grid-column: 5 / 9;  grid-row: 3 / 4; }
   .gallery-item:nth-child(7) { grid-column: 9 / 13; grid-row: 3 / 4; }
   /* Row 3: wide left + narrow right */
-  .gallery-item:nth-child(8) { grid-column: 1 / 13; grid-row: 4 / 5; }
+  .gallery-item:nth-child(8) { grid-column: 1 / 13; grid-row: 4 / 5; max-height: 480px; }
 
   .gallery-item img {
     width: 100%;
@@ -676,24 +676,40 @@
   @media (max-width: 1024px) {
     .services-inner { grid-template-columns: 1fr; gap: 50px; }
     .services-visual { display: none; }
+    .how-steps { grid-template-columns: repeat(2, 1fr); }
     .how-steps::before { display: none; }
     .testi-grid { grid-template-columns: 1fr 1fr; }
     .themes-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
     .nav-links { display: none; }
+    /* Gallery: 2 cols on tablet, all auto */
     .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-    .gallery-item { grid-column: auto !important; grid-row: auto !important; min-height: 200px; }
-    .testi-grid { grid-template-columns: 1fr; }
+    .gallery-item { grid-column: auto !important; grid-row: auto !important; }
+    .gallery-item img { min-height: 200px; }
+    /* Reviews: stack on mobile */
+    .testi-grid { grid-template-columns: 1fr !important; }
     .themes-grid { grid-template-columns: 1fr 1fr; }
     .how-steps { grid-template-columns: 1fr; }
     .cta-box { padding: 50px 30px; }
-    .stats-strip { gap: 24px; }
-    .footer-inner { flex-direction: column; }
+    .stats-strip { gap: 24px; flex-wrap: wrap; justify-content: center; }
+    .footer-inner { flex-direction: column; gap: 28px; }
+    /* Services add-on grid: 1 col on mobile */
+    .services-section [style*="grid-template-columns: repeat(2,1fr)"] { grid-template-columns: 1fr !important; }
+    /* Hero buttons stack */
+    .hero-buttons { flex-direction: column; align-items: center; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; max-width: 300px; }
   }
   @media (max-width: 480px) {
     .themes-grid { grid-template-columns: 1fr; }
     .gallery-grid { grid-template-columns: 1fr; }
+    .gallery-item img { min-height: 240px; }
+    .stats-strip { padding: 24px 5%; }
+    .stat-num { font-size: 1.8rem; }
+    .cta-box { padding: 40px 20px; }
+    .cta-box h2 { font-size: 1.6rem; }
+    .section-title { font-size: 1.8rem; }
+    .nav-logo { font-size: 1.5rem; }
   }
 </style>
 </head>
