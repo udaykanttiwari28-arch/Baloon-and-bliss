@@ -672,7 +672,6 @@
   @media (max-width: 1024px) {
     .services-inner { grid-template-columns: 1fr; gap: 50px; }
     .services-visual { display: none; }
-    .how-steps { grid-template-columns: repeat(2, 1fr); }
     .how-steps::before { display: none; }
     .testi-grid { grid-template-columns: 1fr 1fr; }
     .themes-grid { grid-template-columns: repeat(2, 1fr); }
@@ -800,53 +799,111 @@
 
 <!-- SERVICES -->
 <section class="services-section" id="services">
-  <div class="services-inner">
+  <div class="services-inner" style="grid-template-columns:1fr; max-width:1100px;">
     <div>
       <span class="section-tag reveal">What We Offer</span>
-      <h2 class="section-title reveal">Crafted to Perfection,<br>Delivered with <em style="font-style:italic;color:var(--pink-deep);">Heart</em></h2>
-      <p class="section-sub reveal">From intimate home setups to grand venue transformations, we bring your dream party to life.</p>
-      <div class="services-list">
-        <div class="service-card reveal">
-          <div class="service-icon" style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);">🎈</div>
-          <div>
-            <h3>Balloon Arch & Garlands</h3>
-            <p>Dramatic organic balloon arches in any color palette — perfect for photo backdrops and entrances.</p>
-          </div>
+      <h2 class="section-title reveal">Make Your Celebration<br>Extra <em style="font-style:italic;color:var(--pink-deep);">Special</em> 🎉</h2>
+      <p class="section-sub reveal">Perfect for birthdays, baby showers, and kids' parties — we handle every detail so you can enjoy every moment.</p>
+
+      <!-- BALLOON DECORATION -->
+      <div style="margin-top:40px;">
+        <div class="reveal" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:40px;height:3px;background:linear-gradient(to right,var(--pink-deep),var(--purple));border-radius:2px;"></div>
+          <span style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--dark);">🎈 Balloon Decoration</span>
         </div>
-        <div class="service-card reveal">
-          <div class="service-icon" style="background:linear-gradient(135deg,#FAF5FF,#EDE9FE);">✨</div>
-          <div>
-            <h3>Themed Party Setups</h3>
-            <p>Fully themed décor packages — Baby Shark, Mermaid, Toy Story, Butterflies, and 20+ more themes.</p>
+        <div class="services-list" style="gap:14px;">
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);">🌈</div>
+            <div>
+              <h3>Balloon Arch & Garland</h3>
+              <p>Custom themed arches and garlands in any colour palette — organic, classic, or character-themed. DIY or full setup options available.</p>
+            </div>
           </div>
-        </div>
-        <div class="service-card reveal">
-          <div class="service-icon" style="background:linear-gradient(135deg,#F0FDFA,#CCFBF1);">🎂</div>
-          <div>
-            <h3>Birthday Milestones</h3>
-            <p>Special 1st birthdays, smash cakes, and number balloon setups that make every milestone memorable.</p>
-          </div>
-        </div>
-        <div class="service-card reveal">
-          <div class="service-icon" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);">💍</div>
-          <div>
-            <h3>Events & Celebrations</h3>
-            <p>Baby showers, gender reveals, anniversaries, proposals, and corporate events across Singapore.</p>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FAF5FF,#EDE9FE);">🖼️</div>
+            <div>
+              <h3>Backdrop Styling & Setup</h3>
+              <p>Stunning backdrops with fringe curtains, floral walls, balloon clusters, and themed props — perfect for photos and videos.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="services-visual reveal">
-      <div class="services-visual-img">
-        <img src="img2.jpeg" alt="Beautiful pink butterfly balloon wall">
-      </div>
-      <div class="floating-badge">
-        <span class="badge-num">💕</span>
-        <div>
-          <div class="badge-text" style="font-weight:600;color:var(--dark);">Island-wide Delivery</div>
-          <div class="badge-text">Setup included, stress-free</div>
+
+      <!-- MILESTONE SERVICES -->
+      <div style="margin-top:36px;">
+        <div class="reveal" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:40px;height:3px;background:linear-gradient(to right,var(--purple),var(--teal));border-radius:2px;"></div>
+          <span style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--dark);">🎂 Milestone Celebrations</span>
+        </div>
+        <div class="services-list" style="gap:14px;">
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);">🎂</div>
+            <div>
+              <h3>Cake Smash</h3>
+              <p>Adorable and messy fun! We set up the perfect cake smash backdrop and decoration for your little one's first birthday milestone.</p>
+            </div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#F0FDFA,#CCFBF1);">🎥</div>
+            <div>
+              <h3>Videography & Photography</h3>
+              <p>Capture every magical moment with our professional photo and video services — beautifully shot memories you'll treasure forever.</p>
+            </div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);">🏰</div>
+            <div>
+              <h3>Bouncy Castle</h3>
+              <p>Keep the kids entertained for hours! Our bouncy castles are safe, colourful, and available for both indoor and outdoor parties.</p>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- ADD-ON ACTIVITIES -->
+      <div style="margin-top:36px;">
+        <div class="reveal" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:40px;height:3px;background:linear-gradient(to right,var(--gold),var(--pink-deep));border-radius:2px;"></div>
+          <span style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--dark);">✨ Add-On Party Activities</span>
+        </div>
+        <p class="reveal" style="font-size:0.95rem;color:var(--text-light);margin-bottom:16px;line-height:1.6;">Add more fun to your event! These activities are very popular for kids' parties and help keep them engaged throughout.</p>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;" class="reveal">
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);">💖</div>
+            <div>
+              <h3>Glitter Tattoo</h3>
+              <p>Sparkling, skin-safe glitter tattoos that kids absolutely love — a crowd favourite at every party!</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);">🌿</div>
+            <div>
+              <h3>Henna Art</h3>
+              <p>Beautiful traditional henna designs for kids and adults — a wonderful cultural touch for any celebration.</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FAF5FF,#EDE9FE);">🎈</div>
+            <div>
+              <h3>Balloon Sculpting</h3>
+              <p>Watch your little ones' eyes light up as our artists twist and sculpt balloons into animals, swords, flowers and more!</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);">🎪</div>
+            <div>
+              <h3>Kids Entertainment</h3>
+              <p>Fun, engaging entertainment services to keep every child smiling and active throughout your event.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Combo note -->
+        <div class="reveal" style="margin-top:20px;background:linear-gradient(135deg,rgba(244,114,182,0.08),rgba(168,85,247,0.08));border:1.5px dashed rgba(244,114,182,0.35);border-radius:16px;padding:18px 22px;display:flex;gap:12px;align-items:center;">
+          <span style="font-size:1.4rem;">💬</span>
+          <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;"><strong style="color:var(--dark);">Combo packages available!</strong> Mix and match activities to create the perfect party experience. WhatsApp us for a custom quote.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
