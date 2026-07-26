@@ -136,5 +136,5 @@ Share your date, venue, theme, preferred colours and a photo of the available sp
 
 # Related Guides
 
-- [10 Most Popular First Birthday Themes for Boys in Singapore](../blog.html)
+- [10 Most Popular First Birthday Themes for Boys in Singapore](../first-birthday-themes-boys-singapore.html)
 - [10 Most Popular First Birthday Themes for Girls in Singapore](../first-birthday-themes-girls-singapore.html)

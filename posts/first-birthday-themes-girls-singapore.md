@@ -137,4 +137,4 @@ Tell us your date, venue, preferred theme and budget. [Book now on WhatsApp](htt
 
 ## Related Articles
 
-- [10 Most Popular First Birthday Themes for Boys in Singapore](../blog.html)
+- [10 Most Popular First Birthday Themes for Boys in Singapore](../first-birthday-themes-boys-singapore.html)
