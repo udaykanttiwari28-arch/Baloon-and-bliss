@@ -1,0 +1,11 @@
+node_modules/
+.next/
+*.tsbuildinfo
+.env.local
+.env.*.local
+
+# Keep internal planning and import artifacts local.
+PROJECT_PLAN.md
+DEVELOPMENT_PLAN.md
+jira-bbsg-mvp-import.csv
+SUPABASE_SETUP.md
