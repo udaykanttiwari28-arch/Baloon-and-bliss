@@ -25,7 +25,12 @@ async function sendNotification(enquiry: {
   const apiKey = process.env.RESEND_API_KEY;
   const recipient = process.env.BOOKING_NOTIFICATION_EMAIL;
   const from = process.env.RESEND_FROM_EMAIL;
-  if (!apiKey || !recipient || !from) return;
+  if (!apiKey || !recipient || !from) {
+    console.error('[booking-notification] Missing email configuration.', {
+      hasApiKey: Boolean(apiKey), hasRecipient: Boolean(recipient), hasFrom: Boolean(from),
+    });
+    return;
+  }
 
   const safe = Object.fromEntries(Object.entries(enquiry).map(([key, value]) => [key, escapeHtml(value)]));
   const html = `
@@ -38,11 +43,16 @@ async function sendNotification(enquiry: {
     <p><strong>Notes:</strong> ${safe.specialRequirements || 'None provided'}</p>
   `;
 
-  await fetch('https://api.resend.com/emails', {
+  const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from, to: [recipient], subject: `New booking enquiry ${enquiry.reference}`, html }),
   });
+  if (!response.ok) {
+    console.error('[booking-notification] Resend rejected the email.', response.status, await response.text());
+    return;
+  }
+  console.info('[booking-notification] Email accepted by Resend.', response.status);
 }
 
 export async function POST(request: Request) {
