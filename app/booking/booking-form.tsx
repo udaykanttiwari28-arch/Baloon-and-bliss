@@ -3,6 +3,11 @@
 import { FormEvent, useState } from 'react';
 
 type BookingFormProps = { selectedProduct?: string };
+const timeSlots = Array.from({ length: 48 }, (_, index) => {
+  const hour = String(Math.floor(index / 4)).padStart(2, '0');
+  const minute = String((index % 4) * 15).padStart(2, '0');
+  return `${hour}:${minute}`;
+});
 
 export default function BookingForm({ selectedProduct }: BookingFormProps) {
   const [state, setState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -52,8 +57,8 @@ export default function BookingForm({ selectedProduct }: BookingFormProps) {
       <legend>Event details</legend>
       <div className="form-grid">
         <label>Event date<input type="date" name="eventDate" required /></label>
-        <label>Start time<input type="time" name="startTime" required /></label>
-        <label>End time<input type="time" name="endTime" required /></label>
+        <label>Start time<select name="startTime" defaultValue="" required><option value="" disabled>Select time</option>{timeSlots.map((time) => <option key={`start-${time}`} value={time}>{time}</option>)}</select></label>
+        <label>End time<select name="endTime" defaultValue="" required><option value="" disabled>Select time</option>{timeSlots.map((time) => <option key={`end-${time}`} value={time}>{time}</option>)}</select></label>
         <label>Postal code<input name="postalCode" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required /></label>
       </div>
       <label>Venue<input name="venue" autoComplete="street-address" required /></label>
