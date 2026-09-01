@@ -21,6 +21,10 @@ export default function BookingForm({ selectedProduct }: BookingFormProps) {
   const [state, setState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [reference, setReference] = useState('');
   const [error, setError] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+
+  const endTimeSlots = startTime ? timeSlots.slice(timeSlots.indexOf(startTime) + 1) : [];
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,8 +69,8 @@ export default function BookingForm({ selectedProduct }: BookingFormProps) {
       <legend>Event details</legend>
       <div className="form-grid">
         <label>Event date<input type="date" name="eventDate" required /></label>
-        <label>Start time<select name="startTime" defaultValue="" required><option value="" disabled>Select time</option>{timeSlots.map((time) => <option key={`start-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
-        <label>End time<select name="endTime" defaultValue="" required><option value="" disabled>Select time</option>{timeSlots.map((time) => <option key={`end-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
+        <label>Start time<select name="startTime" value={startTime} onChange={(event) => { setStartTime(event.target.value); setEndTime(''); }} required><option value="" disabled>Select time</option>{timeSlots.map((time) => <option key={`start-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
+        <label>End time<select name="endTime" value={endTime} onChange={(event) => setEndTime(event.target.value)} disabled={!startTime} required><option value="" disabled>{startTime ? 'Select time' : 'Choose start time first'}</option>{endTimeSlots.map((time) => <option key={`end-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
         <label>Postal code<input name="postalCode" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required /></label>
       </div>
       <label>Venue<input name="venue" autoComplete="street-address" required /></label>
