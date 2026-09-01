@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react';
 
 type BookingFormProps = { selectedProduct?: string };
+type BusyRange = { start_time: string; end_time: string; source: string };
 const timeSlots = Array.from({ length: 57 }, (_, index) => {
   const totalMinutes = (7 * 60) + (index * 15);
   const hour = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
@@ -23,8 +24,21 @@ export default function BookingForm({ selectedProduct }: BookingFormProps) {
   const [error, setError] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [busyRanges, setBusyRanges] = useState<BusyRange[]>([]);
+  const [availabilityMessage, setAvailabilityMessage] = useState('');
 
-  const endTimeSlots = startTime ? timeSlots.slice(timeSlots.indexOf(startTime) + 1) : [];
+  function overlaps(start: string, end: string, range: BusyRange) { return start < range.end_time.slice(0, 5) && end > range.start_time.slice(0, 5); }
+  const availableStartSlots = timeSlots.filter((time) => !busyRanges.some((range) => time >= range.start_time.slice(0, 5) && time < range.end_time.slice(0, 5)));
+  const endTimeSlots = startTime ? timeSlots.slice(timeSlots.indexOf(startTime) + 1).filter((time) => !busyRanges.some((range) => overlaps(startTime, time, range))) : [];
+
+  async function loadAvailability(eventDate: string) {
+    setBusyRanges([]); setAvailabilityMessage(''); setEndTime('');
+    if (!eventDate) return;
+    const response = await fetch(`/api/availability?date=${encodeURIComponent(eventDate)}`);
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) setAvailabilityMessage(result.error ?? 'Availability could not be checked.');
+    else setBusyRanges(result.busy ?? []);
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,11 +82,13 @@ export default function BookingForm({ selectedProduct }: BookingFormProps) {
     <fieldset>
       <legend>Event details</legend>
       <div className="form-grid">
-        <label>Event date<input type="date" name="eventDate" required /></label>
-        <label>Start time<select name="startTime" value={startTime} onChange={(event) => { setStartTime(event.target.value); setEndTime(''); }} required><option value="" disabled>Select time</option>{timeSlots.map((time) => <option key={`start-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
+        <label>Event date<input type="date" name="eventDate" onChange={(event) => void loadAvailability(event.target.value)} required /></label>
+        <label>Start time<select name="startTime" value={startTime} onChange={(event) => { setStartTime(event.target.value); setEndTime(''); }} required><option value="" disabled>Select time</option>{availableStartSlots.map((time) => <option key={`start-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
         <label>End time<select name="endTime" value={endTime} onChange={(event) => setEndTime(event.target.value)} disabled={!startTime} required><option value="" disabled>{startTime ? 'Select time' : 'Choose start time first'}</option>{endTimeSlots.map((time) => <option key={`end-${time}`} value={time}>{displayTime(time)}</option>)}</select></label>
         <label>Postal code<input name="postalCode" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required /></label>
       </div>
+      {availabilityMessage && <p className="form-error" role="alert">{availabilityMessage}</p>}
+      {busyRanges.length > 0 && !availabilityMessage && <p className="availability-note">Some times are unavailable on this date. Please choose from the remaining slots.</p>}
       <label>Venue<input name="venue" autoComplete="street-address" required /></label>
       <label>Special requirements<textarea name="specialRequirements" rows={4} placeholder="Theme, colours, guest count, add-ons or anything else you have in mind" /></label>
     </fieldset>
