@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { listActiveProducts } from '../../src/catalogue/catalogue';
 import { getCatalogueProducts } from '../../src/catalogue/storage';
 import SiteNav from '../../src/components/site-nav';
+import SiteFooter from '../../src/components/site-footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,7 @@ export default async function CataloguePage() {
           <div><span className="benefit-icon">＋</span><strong>Complete venue styling</strong><small>Backdrops, balloons, entrance, wall, floor and dessert table decor.</small></div>
         </div>
       </section>
-      <section className="services-note" aria-label="Our services"><p className="eyebrow">Made for your moment</p><h2>More than balloons.</h2><p>Choose a package for a beautiful starting point, then personalise it with custom backdrops, themed cutouts, pedestals, number lights, welcome boards and thoughtful finishing touches. We provide stress-free setup and delivery at your venue across Singapore.</p>
+      <section className="services-note" id="services" aria-label="Our services"><p className="eyebrow">Made for your moment</p><h2>More than balloons.</h2><p>Choose a package for a beautiful starting point, then personalise it with custom backdrops, themed cutouts, pedestals, number lights, welcome boards and thoughtful finishing touches. We provide stress-free setup and delivery at your venue across Singapore.</p>
       </section>
       <section className="product-grid" id="packages" aria-label="Decoration packages">
         {products.map((product) => (
@@ -62,6 +63,7 @@ export default async function CataloguePage() {
           <a href="https://www.tiktok.com/@balloons_and_bliss_sg" target="_blank" rel="noreferrer">TikTok ↗</a>
         </div>
       </section>
+      <SiteFooter />
     </main>
   );
 }

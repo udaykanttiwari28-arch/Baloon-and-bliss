@@ -4,6 +4,7 @@ import { getProductBySlug } from '../../../src/catalogue/catalogue';
 import { exampleCatalogue } from '../../../src/catalogue/fixtures';
 import { getCatalogueProducts } from '../../../src/catalogue/storage';
 import SiteNav from '../../../src/components/site-nav';
+import SiteFooter from '../../../src/components/site-footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </section>
       </div>
+      <SiteFooter />
     </main>
   );
 }
