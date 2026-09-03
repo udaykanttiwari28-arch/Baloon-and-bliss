@@ -9,7 +9,7 @@ export default async function CataloguePage() {
   return (
     <main className="shell">
       <nav className="site-nav" aria-label="Main navigation">
-        <Link className="brand" href="/">Balloons <span>&amp;</span> Bliss</Link>
+        <Link className="brand" href="/"><img className="brand-logo" src="/logo.png" alt="Balloons & Bliss SG" /></Link>
         <div className="nav-links">
           <a href="#packages">Packages</a>
           <Link href="/gallery">Gallery</Link>

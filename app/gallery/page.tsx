@@ -11,7 +11,7 @@ export default async function GalleryPage() {
   return (
     <main className="shell gallery-shell">
       <nav className="site-nav" aria-label="Main navigation">
-        <Link className="brand" href="/">Balloons <span>&amp;</span> Bliss</Link>
+        <Link className="brand" href="/"><img className="brand-logo" src="/logo.png" alt="Balloons & Bliss SG" /></Link>
         <div className="nav-links"><Link href="/catalogue">Packages</Link><Link href="/gallery">Gallery</Link><Link href="/booking">Enquire</Link></div>
       </nav>
       <header className="page-header gallery-header">
