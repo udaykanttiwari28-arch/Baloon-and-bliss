@@ -42,8 +42,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </ul>
           <div id="request-booking" className="request-card">
             <h2>Ready to enquire?</h2>
-            <p>Booking details are the next slice. This CTA is intentionally a handoff until the validated request form is connected.</p>
-            <Link className="button" href={`/booking?product=${product.slug}`}>Request this package</Link>
+            <p>Tell us about your celebration, preferred date and venue. We&apos;ll check availability and help tailor this package to your event.</p>
+            <Link className="button" href={`/booking?product=${product.slug}`}>Start your enquiry</Link>
           </div>
         </section>
       </div>
