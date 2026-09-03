@@ -12,6 +12,7 @@ export default async function CataloguePage() {
         <Link className="brand" href="/">Balloons <span>&amp;</span> Bliss</Link>
         <div className="nav-links">
           <a href="#packages">Packages</a>
+          <Link href="/gallery">Gallery</Link>
           <a href="#why-bliss">Why us</a>
           <Link href="/booking">Enquire</Link>
         </div>

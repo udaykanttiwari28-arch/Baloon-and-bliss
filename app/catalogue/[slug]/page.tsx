@@ -17,7 +17,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="shell detail-shell">
-      <Link className="back-link" href="/catalogue">← All packages</Link>
+      <div className="detail-nav"><Link className="back-link" href="/catalogue">← All packages</Link><Link className="text-link" href="/gallery">View gallery →</Link></div>
       <div className="detail-grid">
         <div className="detail-gallery" aria-label={`${product.name} image gallery`}>
           {product.images.map((image) => image.imageUrl ? (
