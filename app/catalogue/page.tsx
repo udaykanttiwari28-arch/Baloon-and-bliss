@@ -62,7 +62,12 @@ export default async function CataloguePage() {
         <h2>Need something a little different?</h2>
         <p>Our optional extras can extend any package. Tell us what you have in mind and we’ll help shape the right setup for your venue.</p>
         <Link className="button" href="/booking">Start a booking enquiry →</Link>
-        <a className="instagram-link" href="https://www.instagram.com/balloons_and_bliss_sg/" target="_blank" rel="noreferrer">Connect with us on Instagram ↗</a>
+        <div className="contact-links" aria-label="Contact Balloons and Bliss">
+          <a href="https://wa.me/6583937938" target="_blank" rel="noreferrer">WhatsApp +65 8393 7938 ↗</a>
+          <a href="mailto:celebrate@balloonsandblisssg.com">celebrate@balloonsandblisssg.com</a>
+          <a href="https://www.instagram.com/balloons_and_bliss_sg/" target="_blank" rel="noreferrer">Instagram ↗</a>
+          <a href="https://www.tiktok.com/@balloons_and_bliss_sg" target="_blank" rel="noreferrer">TikTok ↗</a>
+        </div>
       </section>
     </main>
   );
