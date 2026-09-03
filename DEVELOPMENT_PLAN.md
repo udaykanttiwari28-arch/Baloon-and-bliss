@@ -132,6 +132,7 @@ Workstreams may proceed in parallel after Agent A publishes the shared domain mo
 - [x] Add a public uncropped gallery using all uploaded package images.
 - [x] Restore the BB&SG logo and favicon, and keep the Gallery link visible on mobile.
 - [x] Simplify the public catalogue hero and remove internal development notes from customer-facing pages.
+- [x] Remove package image-count badges, make package images clickable, and expand the public trust/services section with a Google reviews link.
 - [x] Create the admin Supabase Auth user and run `0004_admin_enquiry_policies.sql`.
 - [ ] Add availability management so admins can block dates/times and prevent conflicting enquiries.
 - [ ] Revisit booking email notifications after the Resend domain is verified. Current test sender restriction rejects delivery to `celebrate@balloonsandblisssg.com`; code and Vercel variables are deployed, but this is intentionally parked.

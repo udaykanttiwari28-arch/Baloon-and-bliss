@@ -26,18 +26,23 @@ export default async function CataloguePage() {
           <div className="hero-proof"><span>✦</span><p><strong>Setup and delivery included</strong><br />At your venue, with less to organise.</p></div>
         </div>
       </header>
-      <section className="benefit-strip" id="why-bliss" aria-label="Service benefits">
-        <div><span className="benefit-icon">✦</span><strong>Custom styling</strong><small>Designed around your theme</small></div>
-        <div><span className="benefit-icon">⌁</span><strong>Stress-free service</strong><small>Setup and delivery at your venue</small></div>
-        <div><span className="benefit-icon">♡</span><strong>Flexible extras</strong><small>Build your celebration your way</small></div>
+      <section className="why-section" id="why-bliss" aria-label="Why choose Balloons and Bliss">
+        <div className="why-intro"><p className="eyebrow">Why Balloons &amp; Bliss</p><h2>Beautiful styling, dependable service.</h2><p>From the first conversation to the final balloon, we make your celebration feel easy, personal and beautifully put together.</p><a className="text-link" href="https://www.google.com/search?q=balloons+and+bliss+sg+reviews" target="_blank" rel="noreferrer">Read our customer reviews on Google ↗</a></div>
+        <div className="benefit-strip">
+          <div><span className="benefit-icon">✦</span><strong>Thoughtful design</strong><small>Custom colours, themes and details made for your event.</small></div>
+          <div><span className="benefit-icon">⌁</span><strong>Reliable and on time</strong><small>Clear planning, punctual arrival and careful setup at your venue.</small></div>
+          <div><span className="benefit-icon">♡</span><strong>Honest, caring service</strong><small>Transparent conversations and styling that respects your vision and budget.</small></div>
+          <div><span className="benefit-icon">★</span><strong>Customer-first experience</strong><small>We listen, communicate clearly and care about every celebration.</small></div>
+          <div><span className="benefit-icon">○</span><strong>Celebrations of every kind</strong><small>Birthdays, baby showers, milestones, corporate events and more.</small></div>
+          <div><span className="benefit-icon">＋</span><strong>Complete venue styling</strong><small>Backdrops, balloons, entrance, wall, floor and dessert table decor.</small></div>
+        </div>
+      </section>
+      <section className="services-note" aria-label="Our services"><p className="eyebrow">Made for your moment</p><h2>More than balloons.</h2><p>Choose a package for a beautiful starting point, then personalise it with custom backdrops, themed cutouts, pedestals, number lights, welcome boards and thoughtful finishing touches. We provide stress-free setup and delivery at your venue across Singapore.</p>
       </section>
       <section className="product-grid" id="packages" aria-label="Decoration packages">
         {products.map((product) => (
           <article className={`product-card${product.highlightLabel ? ' popular-card' : ''}`} key={product.id}>
-            <div className="product-image-wrap">
-              {product.images[0]?.imageUrl ? <img className="product-photo" src={product.images[0].imageUrl} alt={product.images[0].altText} /> : <div className="product-art" aria-hidden="true"><span>✦</span></div>}
-              <span className="image-count">{product.images.length} {product.images.length === 1 ? 'view' : 'views'}</span>
-            </div>
+            <Link className="product-image-link" href={`/catalogue/${product.slug}`} aria-label={`View ${product.name}`}><div className="product-image-wrap">{product.images[0]?.imageUrl ? <img className="product-photo" src={product.images[0].imageUrl} alt={product.images[0].altText} /> : <div className="product-art" aria-hidden="true"><span>✦</span></div>}</div></Link>
             <div className="product-card-body">
               {product.highlightLabel && <span className="popular-badge">★ {product.highlightLabel}</span>}
               <p className="eyebrow">{product.tags.join(' · ')}</p>
