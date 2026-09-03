@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balloons & Bliss — Singapore's Premier Party Decoration Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="logo.png">
+  <style>
+    .packages-section { padding: 90px 5%; background: #fff8fb; }
+    .packages-inner { max-width: 1200px; margin: 0 auto; }
+    .packages-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:38px; }
+    .package-card { background:#fff; border:1px solid rgba(219,39,119,.16); border-radius:20px; padding:28px; box-shadow:0 12px 30px rgba(70,30,52,.08); }
+    .package-card.popular { border:2px solid #f5c35b; transform:translateY(-8px); }
+    .package-card h3 { margin:10px 0 8px; font-family:'Playfair Display',serif; font-size:1.7rem; color:var(--dark); }
+    .package-price { margin:0 0 18px; font-size:1.35rem; font-weight:700; color:var(--pink-deep); }
+    .package-card ul { margin:0; padding-left:20px; color:var(--text-light); line-height:1.8; }
+    .package-link { display:inline-block; margin-top:22px; color:var(--pink-deep); font-weight:700; text-decoration:none; }
+    @media(max-width:760px) { .packages-grid { grid-template-columns:1fr; }.package-card.popular { transform:none; } }
+  </style>
+<style>
+  :root {
+    --pink: #F472B6;
+    --pink-light: #FDF2F8;
+    --pink-deep: #DB2777;
+    --gold: #F59E0B;
+    --gold-light: #FEF3C7;
+    --purple: #A855F7;
+    --teal: #14B8A6;
+    --cream: #FFFBF7;
+    --dark: #1C1016;
+    --text: #3D2030;
+    --text-light: #7B5268;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── FLOATING BUBBLES ── */
+  .bubbles-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.07;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+    10% { opacity: 0.07; }
+    90% { opacity: 0.07; }
+    100% { transform: translateY(-150px) scale(1.1); opacity: 0; }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 18px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,251,247,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(244,114,182,0.15);
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.9rem;
+    color: var(--pink-deep);
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--pink-deep); }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--pink-deep), var(--purple));
+    color: white !important;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-weight: 500 !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    box-shadow: 0 4px 15px rgba(219,39,119,0.35);
+  }
+  .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(219,39,119,0.45) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 120px 5% 60px;
+    overflow: hidden;
+  }
+  .hero-bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 80% at 50% 0%, rgba(244,114,182,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 60% at 90% 80%, rgba(168,85,247,0.1) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 10% 90%, rgba(20,184,166,0.08) 0%, transparent 70%),
+                var(--cream);
+    z-index: -1;
+  }
+
+  /* Decorative circles */
+  .deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    z-index: -1;
+  }
+  .dc1 { width: 500px; height: 500px; top: -180px; right: -120px; background: radial-gradient(circle, rgba(244,114,182,0.12), transparent 70%); }
+  .dc2 { width: 350px; height: 350px; bottom: 0; left: -80px; background: radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%); }
+  .dc3 { width: 200px; height: 200px; top: 40%; right: 8%; background: radial-gradient(circle, rgba(245,158,11,0.12), transparent 70%); }
+
+  .hero-content {
+    text-align: center;
+    max-width: 820px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(244,114,182,0.1);
+    border: 1px solid rgba(244,114,182,0.3);
+    padding: 7px 18px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pink-deep);
+    margin-bottom: 28px;
+    animation: fadeInDown 0.8s ease both;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; background: var(--pink-deep); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity:1; } 50% { transform: scale(1.4); opacity:0.6; } }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--dark);
+    margin-bottom: 24px;
+    animation: fadeInDown 0.9s ease 0.1s both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--pink-deep);
+    display: block;
+  }
+  .hero h1 .script-word {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1em;
+    color: var(--purple);
+    display: block;
+    line-height: 0.95;
+  }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 580px;
+    margin: 0 auto 42px;
+    animation: fadeInDown 1s ease 0.2s both;
+  }
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInDown 1.1s ease 0.3s both;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--pink-deep) 0%, var(--purple) 100%);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 1rem;
+    text-decoration: none;
+    box-shadow: 0 8px 30px rgba(219,39,119,0.4);
+    transition: all 0.3s;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(219,39,119,0.5); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    color: var(--text);
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1.5px solid rgba(244,114,182,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { transform: translateY(-3px); border-color: var(--pink); box-shadow: 0 8px 30px rgba(244,114,182,0.2); }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-8px)} }
+  .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--pink), transparent); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, var(--pink-deep), var(--purple) 60%, var(--teal));
+    padding: 32px 5%;
+    display: flex;
+    justify-content: center;
+    gap: clamp(30px, 6vw, 80px);
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; color: white; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1;
+    display: block;
+  }
+  .stat-label { font-size: 0.8rem; opacity: 0.85; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── SECTION COMMONS ── */
+  section { position: relative; z-index: 2; }
+  .section-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pink-deep);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--dark);
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  /* ── GALLERY ── */
+  .gallery-section {
+    padding: 100px 5%;
+    background: white;
+  }
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .gallery-header .section-sub { margin: 0 auto; }
+
+  /* Desktop masonry — handles any number of photos */
+  .gallery-grid {
+    column-count: 3;
+    column-gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .gallery-item {
+    overflow: hidden;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    background: #f0e6f0;
+    break-inside: avoid;
+    margin-bottom: 16px;
+  }
+  .gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .gallery-item:hover img { transform: scale(1.06); }
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(219,39,119,0.7) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+  }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .gallery-overlay-text {
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+  }
+
+  /* ── MOBILE SWIPE CAROUSEL ── */
+  .gallery-carousel {
+    display: none;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    touch-action: pan-y;
+    max-width: 100%;
+  }
+  .carousel-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+  .carousel-slide {
+    flex: 0 0 100%;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f0e6f0;
+  }
+  .carousel-slide img {
+    width: 100%;
+    height: 320px;
+    object-fit: contain;
+    display: block;
+  }
+  .carousel-slide .gallery-overlay { opacity: 1; background: linear-gradient(to top, rgba(219,39,119,0.65) 0%, transparent 55%); }
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .carousel-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(219,39,119,0.25);
+    transition: all 0.3s;
+    border: none; cursor: pointer; padding: 0;
+  }
+  .carousel-dot.active {
+    background: var(--pink-deep);
+    width: 24px;
+    border-radius: 4px;
+  }
+  .carousel-hint {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    margin-top: 12px;
+    opacity: 0.7;
+  }
+
+  /* ── SERVICES ── */
+  .services-section {
+    padding: 100px 5%;
+    background: var(--cream);
+  }
+  .services-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 40px;
+  }
+  .service-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 28px 28px 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    border: 1.5px solid rgba(244,114,182,0.12);
+    transition: all 0.3s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .service-card:hover {
+    border-color: rgba(244,114,182,0.4);
+    box-shadow: 0 8px 40px rgba(244,114,182,0.15);
+    transform: translateX(6px);
+  }
+  .service-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+  .service-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .service-card p { font-size: 0.9rem; color: var(--text-light); line-height: 1.6; }
+
+  .services-visual {
+    position: relative;
+  }
+  .services-visual-img {
+    width: 100%;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(219,39,119,0.2);
+  }
+  .services-visual-img img { width: 100%; display: block; }
+  .floating-badge {
+    position: absolute;
+    bottom: -20px;
+    left: -24px;
+    background: white;
+    border-radius: 18px;
+    padding: 18px 22px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    animation: floatBadge 3s ease-in-out infinite;
+  }
+  @keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .floating-badge .badge-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--pink-deep);
+    line-height: 1;
+  }
+  .floating-badge .badge-text { font-size: 0.8rem; color: var(--text-light); line-height: 1.4; }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    padding: 100px 5%;
+    background: linear-gradient(135deg, #FDF2F8 0%, #FAF5FF 50%, #F0FDFA 100%);
+  }
+  .how-inner { max-width: 1200px; margin: 0 auto; }
+  .how-header { text-align: center; margin-bottom: 70px; }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    position: relative;
+  }
+  .how-steps::before {
+    content: '';
+    position: absolute;
+    top: 38px;
+    left: calc(12.5% + 16px);
+    right: calc(12.5% + 16px);
+    height: 2px;
+    background: linear-gradient(to right, var(--pink-deep), var(--purple), var(--teal));
+    z-index: 0;
+  }
+  .step-card { text-align: center; position: relative; z-index: 1; }
+  .step-num {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink-deep), var(--purple));
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 8px 24px rgba(219,39,119,0.35);
+  }
+  .step-card:nth-child(2) .step-num { background: linear-gradient(135deg, var(--purple), #6366F1); box-shadow: 0 8px 24px rgba(168,85,247,0.35); }
+  .step-card:nth-child(3) .step-num { background: linear-gradient(135deg, #6366F1, var(--teal)); box-shadow: 0 8px 24px rgba(99,102,241,0.35); }
+  .step-card:nth-child(4) .step-num { background: linear-gradient(135deg, var(--teal), var(--gold)); box-shadow: 0 8px 24px rgba(20,184,166,0.35); }
+  .step-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--dark); }
+  .step-card p { font-size: 0.88rem; color: var(--text-light); line-height: 1.65; }
+
+  /* ── THEMES ── */
+  .themes-section {
+    padding: 100px 5%;
+    background: white;
+  }
+  .themes-inner { max-width: 1200px; margin: 0 auto; }
+  .themes-header { margin-bottom: 50px; }
+  .themes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .theme-pill {
+    background: var(--pink-light);
+    border: 1.5px solid rgba(244,114,182,0.2);
+    border-radius: 50px;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: all 0.25s;
+    cursor: default;
+  }
+  .theme-pill:hover { background: linear-gradient(135deg, var(--pink-deep), var(--purple)); color: white; border-color: transparent; transform: scale(1.04); box-shadow: 0 6px 20px rgba(219,39,119,0.3); }
+  .theme-pill:hover .tp-emoji { transform: rotate(15deg) scale(1.2); }
+  .tp-emoji { font-size: 1.3rem; transition: transform 0.25s; }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section {
+    padding: 100px 5%;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonials-section::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,114,182,0.08), transparent 70%);
+    top: -200px; right: -200px;
+  }
+  .testimonials-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .testimonials-inner .section-title { color: white; }
+  .testimonials-inner .section-tag { color: var(--pink); }
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 50px;
+  }
+  .testi-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 32px;
+    position: relative;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+  }
+  .testi-card:hover { background: rgba(255,255,255,0.09); border-color: rgba(244,114,182,0.3); transform: translateY(-4px); }
+  .testi-stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; margin-bottom: 16px; }
+  .testi-text { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.8); margin-bottom: 24px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink-deep), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: white; font-size: 0.9rem;
+  }
+  .testi-name { font-weight: 500; color: white; font-size: 0.9rem; }
+  .testi-role { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    padding: 100px 5%;
+    background: var(--cream);
+    text-align: center;
+  }
+  .cta-box {
+    max-width: 700px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, var(--pink-deep) 0%, var(--purple) 60%, var(--teal) 100%);
+    border-radius: 32px;
+    padding: 70px 60px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(219,39,119,0.35);
+  }
+  .cta-box::before {
+    content: '🎈';
+    position: absolute;
+    font-size: 10rem;
+    opacity: 0.07;
+    top: -20px; right: -20px;
+    animation: floatBadge 4s ease-in-out infinite;
+  }
+  .cta-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: white;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .cta-box p { color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.6; margin-bottom: 36px; position: relative; }
+  .btn-white {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: var(--pink-deep);
+    padding: 17px 36px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    position: relative;
+  }
+  .btn-white:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 14px 40px rgba(0,0,0,0.3); }
+  .whatsapp-icon { font-size: 1.3rem; }
+  .contact-note { margin-top: 20px; color: rgba(255,255,255,0.65); font-size: 0.88rem; position: relative; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--dark);
+    padding: 60px 5% 36px;
+    color: rgba(255,255,255,0.6);
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 32px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .footer-logo {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: white;
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-tagline { font-size: 0.85rem; margin-top: 8px; color: rgba(255,255,255,0.45); }
+  .footer-links h4 { color: white; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+  .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--pink); }
+  .footer-contact p { font-size: 0.9rem; line-height: 1.9; }
+  .footer-contact a { color: var(--pink); text-decoration: none; }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 28px auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-bottom-love { color: var(--pink); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .services-inner { grid-template-columns: 1fr; gap: 50px; }
+    .services-visual { display: none; }
+    .how-steps { grid-template-columns: repeat(2, 1fr); }
+    .how-steps::before { display: none; }
+    .testi-grid { grid-template-columns: 1fr 1fr; }
+    .themes-grid { grid-template-columns: repeat(2, 1fr); }
+    .gallery-grid { column-count: 2; }
+  }
+  @media (max-width: 768px) {
+    /* NAV */
+    .nav-links { display: none; }
+    /* GALLERY: hide desktop grid, show carousel */
+    .gallery-grid { display: none; }
+    .gallery-carousel { display: block; }
+    /* STATS */
+    .stats-strip { gap: 20px; flex-wrap: wrap; justify-content: center; padding: 24px 5%; }
+    /* REVIEWS */
+    .testi-grid { grid-template-columns: 1fr !important; }
+    /* THEMES */
+    .themes-grid { grid-template-columns: 1fr 1fr; }
+    /* HOW IT WORKS */
+    .how-steps { grid-template-columns: 1fr; }
+    /* CTA */
+    .cta-box { padding: 44px 24px; }
+    /* FOOTER */
+    .footer-inner { flex-direction: column; gap: 28px; }
+    /* HERO buttons */
+    .hero-buttons { flex-direction: column; align-items: center; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; max-width: 300px; }
+    /* SECTION padding */
+    .gallery-section, .services-section, .how-section, .themes-section, .testimonials-section, .cta-section { padding: 64px 5%; }
+    /* SERVICES add-on 2-col grid collapse */
+    .addon-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 480px) {
+    .themes-grid { grid-template-columns: 1fr; }
+    .stats-strip { gap: 16px; }
+    .stat-num { font-size: 1.8rem; }
+    .cta-box { padding: 36px 18px; }
+    .cta-box h2 { font-size: 1.5rem; }
+    .section-title { font-size: 1.7rem; }
+    .nav-logo { font-size: 1.4rem; }
+    .hero h1 { font-size: 2.4rem; }
+    .carousel-slide img { height: 280px; }
+  }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.95);
+    align-items: center;
+    justify-content: center;
+    touch-action: pan-y;
+  }
+  .lightbox-img {
+    max-width: 92vw;
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: 12px;
+    user-select: none;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 18px; right: 22px;
+    background: none; border: none;
+    color: white; font-size: 2.2rem;
+    cursor: pointer; line-height: 1;
+    opacity: 0.8; transition: opacity 0.2s;
+    z-index: 10000;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  .lightbox-prev, .lightbox-next {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: white; font-size: 1.6rem;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    z-index: 10000;
+  }
+  .lightbox-prev:hover, .lightbox-next:hover { background: rgba(255,255,255,0.25); }
+  .lightbox-prev { left: 16px; }
+  .lightbox-next { right: 16px; }
+  .lightbox-counter {
+    position: absolute;
+    bottom: 20px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem; letter-spacing: 0.1em;
+  }
+  .lightbox-dots {
+    position: absolute;
+    bottom: 44px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px;
+  }
+  .lightbox-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: all 0.25s; border: none; cursor: pointer; padding: 0;
+  }
+  .lightbox-dot.active { background: white; width: 20px; border-radius: 4px; }
+  @media (max-width: 768px) {
+    .lightbox-prev { left: 8px; }
+    .lightbox-next { right: 8px; }
+    .lightbox-prev, .lightbox-next { width: 40px; height: 40px; font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating background bubbles -->
+<div class="bubbles-bg" id="bubblesContainer"></div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <img src="logo.png" alt="Balloons & Bliss Logo" style="width:44px;height:44px;object-fit:contain;border-radius:8px;">
+    <div class="nav-logo">Balloons <span>&</span> Bliss</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#packages">Packages</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#reviews">Why Us</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="/booking" class="nav-cta">Enquire</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-gradient"></div>
+  <div class="deco-circle dc1"></div>
+  <div class="deco-circle dc2"></div>
+  <div class="deco-circle dc3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Singapore's Premier Party Studio
+    </div>
+    <h1>
+      Turning Every Moment Into
+      <em>Pure Magic</em>
+      <span class="script-word">& Bliss</span>
+    </h1>
+    <p class="hero-sub">
+      Stunning balloon arches, whimsical themed décor, and unforgettable celebrations — designed and delivered across Singapore with love and precision.
+    </p>
+    <div class="hero-buttons">
+    <a href="https://wa.me/6583937938" class="btn-primary" target="_blank">
+        💬 WhatsApp Us
+      </a>
+      <a href="#gallery" class="btn-secondary">
+        ✨ View Gallery
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <span class="stat-num">20+</span>
+    <span class="stat-label">Unique Themes</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">🎈</span>
+    <span class="stat-label">Custom Setups</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">SG</span>
+    <span class="stat-label">Island-wide Delivery</span>
+  </div>
+</div>
+
+<!-- PACKAGES -->
+<section class="packages-section" id="packages">
+  <div class="packages-inner">
+    <span class="section-tag">Choose your celebration style</span>
+    <h2 class="section-title">Beautiful setups, made simple.</h2>
+    <p class="section-sub">Every package includes custom styling plus stress-free setup and delivery at your venue.</p>
+    <div class="packages-grid">
+      <article class="package-card"><span class="section-tag">Classic · Essential</span><h3>Classic Setup</h3><p class="package-price">From S$398</p><ul><li>1 custom backdrop</li><li>2 themed cutouts</li><li>1 pedestal</li><li>Setup and delivery at your venue</li></ul><a class="package-link" href="/catalogue/classic-setup">Explore Classic →</a></article>
+      <article class="package-card popular"><span class="section-tag">Signature · Most Popular</span><h3>Signature Setup</h3><p class="package-price">From S$450</p><ul><li>2 custom backdrops</li><li>2 themed cutouts</li><li>2 pedestals</li><li>Number light and welcome board</li><li>Setup and delivery at your venue</li></ul><a class="package-link" href="/catalogue/signature-setup">Explore Signature →</a></article>
+      <article class="package-card"><span class="section-tag">Premium · Full Event Styling</span><h3>Premium Setup</h3><p class="package-price">From S$750</p><ul><li>3+ custom backdrops or one large backdrop</li><li>3+ themed cutouts</li><li>Entrance, wall, floor and dessert table decor</li><li>Setup and delivery at your venue</li></ul><a class="package-link" href="/catalogue/premium-setup">Explore Premium →</a></article>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section" id="gallery">
+  <div class="gallery-header reveal">
+    <span class="section-tag">Our Portfolio</span>
+    <h2 class="section-title">Celebrations We've Crafted</h2>
+    <p class="section-sub">Each setup is thoughtfully designed to match your vision — no two parties are ever the same.</p>
+  </div>
+  <!-- Desktop grid (built from GALLERY_IMAGES list in script) -->
+  <div class="gallery-grid reveal" id="galleryGrid"></div>
+
+  <!-- Mobile swipe carousel -->
+  <div class="gallery-carousel" id="galleryCarousel">
+    <div class="carousel-track" id="carouselTrack"></div>
+    <div class="carousel-dots" id="carouselDots"></div>
+    <p class="carousel-hint">← Swipe to explore →</p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services-section" id="services">
+  <div class="services-inner" style="grid-template-columns:1fr; max-width:1100px;">
+    <div>
+      <span class="section-tag reveal">What We Offer</span>
+      <h2 class="section-title reveal">Make Your Celebration<br>Extra <em style="font-style:italic;color:var(--pink-deep);">Special</em> 🎉</h2>
+      <p class="section-sub reveal">Perfect for birthdays, baby showers, kids' parties, and corporate events — we handle every detail so you can enjoy every moment.</p>
+
+      <!-- BALLOON DECORATION -->
+      <div style="margin-top:40px;">
+        <div class="reveal" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:40px;height:3px;background:linear-gradient(to right,var(--pink-deep),var(--purple));border-radius:2px;"></div>
+          <span style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--dark);">🎈 Balloon Decoration</span>
+        </div>
+        <div class="services-list" style="gap:14px;">
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);">🌈</div>
+            <div>
+              <h3>Balloon Arch & Garland</h3>
+              <p>Custom themed arches and garlands in any colour palette — organic, classic, or character-themed. DIY or full setup options available.</p>
+            </div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FAF5FF,#EDE9FE);">🖼️</div>
+            <div>
+              <h3>Custom Backdrop & Styling</h3>
+              <p>Personalised backdrops with names, themes, and colours of your choice — arch panels, fringe curtains, floral walls, balloon clusters, and themed props, perfect for photos and videos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MILESTONE SERVICES -->
+      <div style="margin-top:36px;">
+        <div class="reveal" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:40px;height:3px;background:linear-gradient(to right,var(--purple),var(--teal));border-radius:2px;"></div>
+          <span style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--dark);">🎂 Milestones & Events</span>
+        </div>
+        <div class="services-list" style="gap:14px;">
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);">🎂</div>
+            <div>
+              <h3>Cake Smash</h3>
+              <p>Adorable and messy fun! We set up the perfect cake smash backdrop and decoration for your little one's first birthday milestone.</p>
+            </div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);">🎀</div>
+            <div>
+              <h3>Gender Reveal</h3>
+              <p>Make the big announcement unforgettable! Beautiful pink & blue balloon setups, confetti cannons, and themed decorations to celebrate your bundle of joy.</p>
+            </div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#F0FDFA,#CCFBF1);">🎥</div>
+            <div>
+              <h3>Videography & Photography</h3>
+              <p>Capture every magical moment with our professional photo and video services — beautifully shot memories you'll treasure forever.</p>
+            </div>
+          </div>
+          <div class="service-card reveal">
+            <div class="service-icon" style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);">🏢</div>
+            <div>
+              <h3>Corporate & Grand Opening Events</h3>
+              <p>Balloon décor and styling for grand openings, office celebrations, D&D nights, and product launches across Singapore — make your brand moment memorable.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD-ON ACTIVITIES -->
+      <div style="margin-top:36px;">
+        <div class="reveal" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div style="width:40px;height:3px;background:linear-gradient(to right,var(--gold),var(--pink-deep));border-radius:2px;"></div>
+          <span style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--dark);">✨ Add-On Party Activities</span>
+        </div>
+        <p class="reveal" style="font-size:0.95rem;color:var(--text-light);margin-bottom:16px;line-height:1.6;">Add more fun to your event! These activities are very popular for kids' parties and help keep them engaged throughout.</p>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;" class="reveal addon-grid">
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FDF2F8,#FCE7F3);">💖</div>
+            <div>
+              <h3>Glitter Tattoo</h3>
+              <p>Sparkling, skin-safe glitter tattoos that kids absolutely love — a crowd favourite at every party!</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);">🌿</div>
+            <div>
+              <h3>Henna Art</h3>
+              <p>Beautiful traditional henna designs for kids and adults — a wonderful cultural touch for any celebration.</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FAF5FF,#EDE9FE);">🎈</div>
+            <div>
+              <h3>Balloon Sculpting</h3>
+              <p>Watch your little ones' eyes light up as our artists twist and sculpt balloons into animals, swords, flowers and more!</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);">🎪</div>
+            <div>
+              <h3>Kids Entertainment</h3>
+              <p>Fun, engaging entertainment services to keep every child smiling and active throughout your event.</p>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon" style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);">🏰</div>
+            <div>
+              <h3>Bouncy Castle</h3>
+              <p>Keep the kids entertained for hours! Safe, colourful bouncy castles available for both indoor and outdoor parties.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Combo note -->
+        <div class="reveal" style="margin-top:20px;background:linear-gradient(135deg,rgba(244,114,182,0.08),rgba(168,85,247,0.08));border:1.5px dashed rgba(244,114,182,0.35);border-radius:16px;padding:18px 22px;display:flex;gap:12px;align-items:center;">
+          <span style="font-size:1.4rem;">💬</span>
+          <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;"><strong style="color:var(--dark);">Combo packages available!</strong> Mix and match activities to create the perfect party experience. WhatsApp us for a custom quote.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="how-header">
+      <span class="section-tag reveal">The Process</span>
+      <h2 class="section-title reveal">Simple, Seamless & Stress-Free</h2>
+    </div>
+    <div class="how-steps">
+      <div class="step-card reveal">
+        <div class="step-num">1</div>
+        <h3>Chat With Us</h3>
+        <p>WhatsApp us your date, theme ideas, and budget. We'll respond quickly and help you plan.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">2</div>
+        <h3>Customise Your Setup</h3>
+        <p>We design a personalised concept with colour palette, balloon types, and themed elements.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">3</div>
+        <h3>We Set Everything Up</h3>
+        <p>Our team arrives, sets up the full decoration, and leaves everything picture-perfect.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">4</div>
+        <h3>You Celebrate!</h3>
+        <p>Walk in, be amazed, and enjoy every magical moment while we handle the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section" id="reviews">
+  <div class="testimonials-inner">
+    <span class="section-tag reveal">⭐ Real Google Reviews</span>
+    <h2 class="section-title reveal">What Our Customers Say</h2>
+
+    <!-- Live Google Reviews via Elfsight — auto-updates when new reviews come in -->
+    <div class="reveal" style="margin-top:40px;">
+      <!-- ELFSIGHT WIDGET: replace 'YOUR_WIDGET_ID' after setup at elfsight.com -->
+      <div class="elfsight-app-caae9d3a-de9d-4dab-8338-f4c0a996874f" data-elfsight-app-lazy></div>
+      <script src="https://static.elfsight.com/platform/platform.js" async></script>
+    </div>
+
+    <!-- "See all reviews" link -->
+    <div class="reveal" style="text-align:center;margin-top:36px;">
+      <a href="https://www.google.com/search?q=balloons+and+bliss+sg" target="_blank"
+        style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.2);color:white;padding:13px 28px;border-radius:50px;text-decoration:none;font-size:0.9rem;font-weight:500;transition:all 0.3s;"
+        onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        See All Reviews on Google
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-box reveal">
+    <h2>Ready to Create Something Magical? 🎈</h2>
+    <p>Chat with us on WhatsApp — we'll help you plan the perfect celebration, from concept to confetti.</p>
+    <a href="https://wa.me/6583937938?text=Hi%20Balloons%20%26%20Bliss!%20I'd%20like%20to%20enquire%20about%20a%20party%20decoration%20setup." class="btn-white" target="_blank">
+      <span class="whatsapp-icon">💬</span>
+      WhatsApp +65 8393 7938
+    </a>
+    <p class="contact-note">Available via WhatsApp & Email · Singapore</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <img src="logo.png" alt="Balloons & Bliss Logo" style="width:48px;height:48px;object-fit:contain;border-radius:8px;">
+        <div class="footer-logo">Balloons <span>&</span> Bliss</div>
+      </div>
+      <p class="footer-tagline">Singapore's favourite party decoration studio 🎈</p>
+    </div>
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="blog.html">Blog</a></li>
+            <li><a href="#contact">Book Now</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <h4 style="color:white;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Contact</h4>
+      <p>📱 <a href="https://wa.me/6583937938">+65 8393 7938</a></p>
+      <p>📧 <a href="mailto:celebrate@balloonsandblisssg.com">celebrate@balloonsandblisssg.com</a></p>
+      <p>📍 Serving all of Singapore</p>
+      <p>📸 <a href="https://www.instagram.com/balloons_and_bliss_sg/" target="_blank">Instagram</a> · <a href="https://www.tiktok.com/@balloons_and_bliss_sg" target="_blank">TikTok</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Balloons & Bliss. All rights reserved.</span>
+    <span>Made with <span class="footer-bottom-love">♥</span> in Singapore 🇸🇬</span>
+  </div>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════
+// GALLERY PHOTOS — to add/remove/reorder photos, edit ONLY this list.
+// Each entry is a Cloudinary URL. The grid, mobile carousel and
+// lightbox all build themselves automatically from it.
+// ════════════════════════════════════════════════════════
+var GALLERY_IMAGES = [
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050121/WhatsApp_Image_2026-07-26_at_3.07.37_PM_dnuuj7.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050121/WhatsApp_Image_2026-07-26_at_3.07.37_PM_2_gzxmge.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050121/WhatsApp_Image_2026-07-26_at_3.07.37_PM_1_ldsvna.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050332/image_1_dqtqyh.png',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050169/image_y1lepi.png',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161062/IMG_1504_mqu5km.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269511/WhatsApp_Image_2026-07-17_at_2.24.30_PM_bs8uqb.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269304/WhatsApp_Image_2026-07-14_at_10.21.11_PM_msy9yy.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269292/WhatsApp_Image_2026-07-14_at_10.21.11_PM_1_c4ma91.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269275/WhatsApp_Image_2026-07-14_at_10.21.11_PM_2_jobmeq.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269265/WhatsApp_Image_2026-07-14_at_10.21.11_PM_4_fglqlk.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161062/WhatsApp_Image_2026-06-11_at_2.48.29_PM_lrmbdr.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161062/WhatsApp_Image_2026-06-11_at_2.48.21_PM_jdp4kf.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-06-11_at_2.45.23_PM_r6frxr.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-05-12_at_7.43.34_PM_znykyj.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-05-30_at_8.14.26_PM_ef51yy.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161060/WhatsApp_Image_2026-03-31_at_10.33.17_AM_1_grytxm.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-05-01_at_7.48.30_PM_o5pwmr.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1780215410/WhatsApp_Image_2026-05-23_at_12.57.51_PM_by2whu.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1780215410/WhatsApp_Image_2026-05-30_at_8.14.33_PM_slxdfs.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_1_qfx1w5.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/Photo_6_rvrigc.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_2_ponizt.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_3_jbw4zs.jpg',
+  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_4_cwtr3e.jpg'
+];
+
+// Build desktop grid + mobile carousel from the list
+(function() {
+  var grid = document.getElementById('galleryGrid');
+  var track = document.getElementById('carouselTrack');
+  GALLERY_IMAGES.forEach(function(src, i) {
+    var alt = 'Balloons and Bliss event decoration ' + (i + 1);
+    if (grid) {
+      var item = document.createElement('div');
+      item.className = 'gallery-item';
+      item.innerHTML = '<img src="' + src + '" alt="' + alt + '" loading="lazy">' +
+        '<div class="gallery-overlay"></div>';
+      grid.appendChild(item);
+    }
+    if (track) {
+      var slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      slide.innerHTML = '<img src="' + src + '" alt="' + alt + '" loading="lazy">';
+      track.appendChild(slide);
+    }
+  });
+})();
+
+// ── Generate floating bubbles
+const colors = ['#F472B6','#A855F7','#14B8A6','#F59E0B','#60A5FA','#FB7185'];
+const container = document.getElementById('bubblesContainer');
+for (let i = 0; i < 18; i++) {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = 40 + Math.random() * 120;
+  b.style.cssText = `
+    width: ${size}px; height: ${size}px;
+    left: ${Math.random() * 100}%;
+    background: ${colors[Math.floor(Math.random() * colors.length)]};
+    animation-duration: ${8 + Math.random() * 14}s;
+    animation-delay: ${Math.random() * 10}s;
+  `;
+  container.appendChild(b);
+}
+
+// ── Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Nav scroll effect
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.boxShadow =
+    window.scrollY > 50 ? '0 4px 30px rgba(0,0,0,0.08)' : '';
+});
+
+// ── SWIPE CAROUSEL
+(function() {
+  const carousel = document.getElementById('galleryCarousel');
+  const track = document.getElementById('carouselTrack');
+  const dotsContainer = document.getElementById('carouselDots');
+  if (!carousel || !track) return;
+
+  const slides = track.querySelectorAll('.carousel-slide');
+  let current = 0;
+  let startX = 0;
+  let isDragging = false;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i+1));
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(index) {
+    current = Math.max(0, Math.min(index, slides.length - 1));
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  // Touch events
+  carousel.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; }, {passive: true});
+  carousel.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const diff = startX - e.touches[0].clientX;
+    const offset = current * 100 + (diff / carousel.offsetWidth * 100);
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(-' + offset + '%)';
+  }, {passive: true});
+  carousel.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    track.style.transition = '';
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      goTo(diff > 0 ? current + 1 : current - 1);
+    } else {
+      goTo(current);
+    }
+  });
+
+  // Mouse drag support
+  carousel.addEventListener('mousedown', e => { startX = e.clientX; isDragging = true; });
+  carousel.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const diff = startX - e.clientX;
+    const offset = current * 100 + (diff / carousel.offsetWidth * 100);
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(-' + offset + '%)';
+  });
+  carousel.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    track.style.transition = '';
+    const diff = startX - e.clientX;
+    if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+    else goTo(current);
+  });
+  carousel.addEventListener('mouseleave', () => { if(isDragging) { isDragging = false; track.style.transition = ''; goTo(current); } });
+})();
+
+// ── LIGHTBOX
+document.addEventListener('DOMContentLoaded', function() {
+  var images = GALLERY_IMAGES.map(function(src, i) { return { src: src, alt: 'Balloons and Bliss photo ' + (i+1) }; });
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightboxImg');
+  var lbClose = document.getElementById('lightboxClose');
+  var lbPrev = document.getElementById('lightboxPrev');
+  var lbNext = document.getElementById('lightboxNext');
+  var lbDots = document.getElementById('lightboxDots');
+  var lbCount = document.getElementById('lightboxCounter');
+  if (!lb) return;
+  var current = 0;
+  var touchStartX = 0;
+  var dragStartX = 0;
+  var dragging = false;
+
+  // Build dots
+  images.forEach(function(_, i) {
+    var d = document.createElement('button');
+    d.className = 'lightbox-dot';
+    d.addEventListener('click', function(e) { e.stopPropagation(); goTo(i); });
+    lbDots.appendChild(d);
+  });
+
+  function openLB(idx) {
+    current = idx;
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    render();
+  }
+  function closeLB() {
+    lb.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function goTo(idx) {
+    current = (idx + images.length) % images.length;
+    render();
+  }
+  function render() {
+    lbImg.style.opacity = '0';
+    setTimeout(function() {
+      lbImg.src = images[current].src;
+      lbImg.alt = images[current].alt;
+      lbImg.style.opacity = '1';
+    }, 100);
+    lbCount.textContent = (current + 1) + ' / ' + images.length;
+    var dots = lbDots.querySelectorAll('.lightbox-dot');
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+  }
+
+  // Gallery items click
+  document.querySelectorAll('.gallery-item').forEach(function(item, i) {
+    item.style.cursor = 'zoom-in';
+    item.addEventListener('click', function(e) { e.preventDefault(); openLB(i); });
+  });
+
+  // Buttons
+  lbClose.addEventListener('click', function(e) { e.stopPropagation(); closeLB(); });
+  lbPrev.addEventListener('click', function(e) { e.stopPropagation(); goTo(current - 1); });
+  lbNext.addEventListener('click', function(e) { e.stopPropagation(); goTo(current + 1); });
+
+  // Backdrop click
+  lb.addEventListener('click', function(e) { if (e.target === lb) closeLB(); });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (lb.style.display !== 'flex') return;
+    if (e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'Escape') closeLB();
+  });
+
+  // Touch swipe
+  lb.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+  }, {passive:true});
+
+  // Mouse drag swipe (desktop)
+  lb.addEventListener('mousedown', function(e) { dragStartX = e.clientX; dragging = true; e.preventDefault(); });
+  lb.addEventListener('mouseup', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    var diff = dragStartX - e.clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+  });
+  lb.addEventListener('mouseleave', function() { dragging = false; });
+});
+
+</script>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8249;</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <button class="lightbox-next" id="lightboxNext" aria-label="Next">&#8250;</button>
+  <div class="lightbox-dots" id="lightboxDots"></div>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+</body>
+</html>

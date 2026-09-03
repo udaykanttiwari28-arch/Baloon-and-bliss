@@ -1,3 +1,5 @@
-import CataloguePage from './catalogue/page';
+import { redirect } from 'next/navigation';
 
-export default CataloguePage;
+export default function HomePage() {
+  redirect('/original-home.html');
+}

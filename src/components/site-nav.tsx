@@ -7,6 +7,7 @@ export default function SiteNav() {
       <div className="nav-links">
         <Link href="/catalogue#packages">Packages</Link>
         <Link href="/gallery">Gallery</Link>
+        <Link href="/catalogue#services">Services</Link>
         <Link href="/catalogue#why-bliss">Why us</Link>
         <Link href="/booking">Enquire</Link>
       </div>

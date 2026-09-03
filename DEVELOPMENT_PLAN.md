@@ -130,6 +130,7 @@ Workstreams may proceed in parallel after Agent A publishes the shared domain mo
 - [x] Run `0003_booking_enquiries.sql` in Supabase and verify a real production enquiry end to end.
 - [x] Build the first authenticated admin enquiry list and status management UI.
 - [x] Add a public uncropped gallery using all uploaded package images.
+- [x] Restore the original-style homepage locally, move packages below the hero, and align public navigation destinations.
 - [x] Restore the BB&SG logo and favicon, and keep the Gallery link visible on mobile.
 - [x] Simplify the public catalogue hero and remove internal development notes from customer-facing pages.
 - [x] Remove package image-count badges, make package images clickable, and expand the public trust/services section with a Google reviews link.
