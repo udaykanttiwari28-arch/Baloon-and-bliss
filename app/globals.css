@@ -5,7 +5,7 @@ a { color: inherit; }
 .shell { max-width: 1180px; margin: 0 auto; padding: 28px 24px 80px; }
 .hero-shell { min-height: 100vh; display: grid; align-content: center; justify-items: start; }
 .site-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 72px; }
-.nav-links { display: flex; align-items: center; gap: 26px; color: var(--muted); font-size: .9rem; font-weight: 700; }
+.nav-links { display: flex; align-items: center; justify-content: flex-end; gap: 12px 22px; flex-wrap: wrap; color: var(--muted); font-size: .9rem; font-weight: 700; }
 .nav-links a { text-decoration: none; }
 .nav-links a:hover, .text-link:hover, .back-link:hover, .instagram-link:hover { color: var(--purple); }
 .page-header { max-width: 700px; margin-bottom: 40px; }
@@ -134,7 +134,7 @@ input:focus, select:focus, textarea:focus { outline: 3px solid #fbcfe8; border-c
 @media (max-width: 760px) { .gallery-grid { column-count: 2; }.detail-nav { align-items: flex-start; } }
 @media (max-width: 760px) { .hero-header { grid-template-columns: 1fr; gap: 30px; } .hero-art { min-height: 250px; } .detail-grid { grid-template-columns: 1fr; gap: 30px; } .product-art-large { min-height: 260px; } .detail-gallery { max-height: none; } .why-section { grid-template-columns: 1fr; gap: 20px; }.why-intro { padding-right: 0; } }
 @media (max-width: 760px) { .benefit-strip { grid-template-columns: 1fr; } }
-@media (max-width: 560px) { .shell { padding: 20px 16px 56px; } .site-nav { margin-bottom: 48px; } .brand-logo { width: 62px; height: 62px; } .nav-links { gap: 10px; font-size: .76rem; } .hero-header { margin-bottom: 48px; } .form-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .shell { padding: 20px 16px 56px; } .site-nav { align-items: flex-start; margin-bottom: 48px; } .brand-logo { width: 62px; height: 62px; } .nav-links { max-width: 230px; gap: 8px 12px; font-size: .72rem; } .hero-header { margin-bottom: 48px; } .form-grid { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .site-footer { margin-right: -16px; margin-left: -16px; padding-right: 16px; padding-left: 16px; }.footer-inner { grid-template-columns: 1fr 1fr; }.footer-brand { grid-column: 1 / -1; } }
 @media (max-width: 480px) { .footer-inner { grid-template-columns: 1fr; gap: 26px; }.footer-brand { grid-column: auto; }.footer-bottom { flex-direction: column; } }
 @media (max-width: 560px) { .why-section .benefit-strip { grid-template-columns: 1fr; }.services-note { padding: 24px 20px; } }
