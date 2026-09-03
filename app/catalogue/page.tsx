@@ -25,7 +25,6 @@ export default async function CataloguePage() {
           <div className="hero-actions"><a className="button" href="#packages">Explore packages</a><a className="text-link" href="#why-bliss">See how it works ↓</a></div>
           <div className="hero-proof"><span>✦</span><p><strong>Setup and delivery included</strong><br />At your venue, with less to organise.</p></div>
         </div>
-        <div className="hero-art" aria-hidden="true"><span className="hero-orb orb-one" /><span className="hero-orb orb-two" /><span className="hero-star">✦</span><span className="hero-caption">Celebrate beautifully</span></div>
       </header>
       <section className="benefit-strip" id="why-bliss" aria-label="Service benefits">
         <div><span className="benefit-icon">✦</span><strong>Custom styling</strong><small>Designed around your theme</small></div>
@@ -60,7 +59,6 @@ export default async function CataloguePage() {
         <Link className="button" href="/booking">Start a booking enquiry →</Link>
         <a className="instagram-link" href="https://www.instagram.com/balloons_and_bliss_sg/" target="_blank" rel="noreferrer">Connect with us on Instagram ↗</a>
       </section>
-      <p className="fixture-note">Package prices and copy are ready for review. Optional extras are available on request.</p>
     </main>
   );
 }

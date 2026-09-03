@@ -9,8 +9,10 @@ a { color: inherit; }
 .nav-links a { text-decoration: none; }
 .nav-links a:hover, .text-link:hover, .back-link:hover, .instagram-link:hover { color: var(--purple); }
 .page-header { max-width: 700px; margin-bottom: 40px; }
-.hero-header { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); max-width: none; gap: 64px; align-items: center; margin-bottom: 66px; }
-.hero-copy { max-width: 700px; }
+.hero-header { display: block; max-width: none; margin-bottom: 66px; }
+.hero-copy { max-width: 980px; }
+.hero-copy h1 { max-width: 900px; }
+.hero-copy .lede { max-width: 800px; }
 .hero-actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .brand { display: inline-flex; align-items: center; font-size: 1.1rem; font-weight: 700; text-decoration: none; }
 .brand-logo { display: block; width: 76px; height: 76px; object-fit: contain; }

@@ -47,7 +47,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </section>
       </div>
-      <p className="fixture-note">Development package only — confirm catalogue data and pricing before accepting bookings.</p>
     </main>
   );
 }
