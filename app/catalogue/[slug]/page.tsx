@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getProductBySlug } from '../../../src/catalogue/catalogue';
 import { exampleCatalogue } from '../../../src/catalogue/fixtures';
 import { getCatalogueProducts } from '../../../src/catalogue/storage';
+import SiteNav from '../../../src/components/site-nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="shell detail-shell">
+      <SiteNav />
       <div className="detail-nav"><Link className="back-link" href="/catalogue">← All packages</Link><Link className="text-link" href="/gallery">View gallery →</Link></div>
       <div className="detail-grid">
         <div className="detail-gallery" aria-label={`${product.name} image gallery`}>

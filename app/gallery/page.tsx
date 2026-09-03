@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getCatalogueProducts } from '../../src/catalogue/storage';
 import { listActiveProducts } from '../../src/catalogue/catalogue';
+import SiteNav from '../../src/components/site-nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,10 +11,7 @@ export default async function GalleryPage() {
 
   return (
     <main className="shell gallery-shell">
-      <nav className="site-nav" aria-label="Main navigation">
-        <Link className="brand" href="/"><img className="brand-logo" src="/logo.png" alt="Balloons & Bliss SG" /></Link>
-        <div className="nav-links"><Link href="/catalogue">Packages</Link><Link href="/gallery">Gallery</Link><Link href="/booking">Enquire</Link></div>
-      </nav>
+      <SiteNav />
       <header className="page-header gallery-header">
         <p className="eyebrow">A little inspiration</p>
         <h1>Celebrations styled with bliss.</h1>

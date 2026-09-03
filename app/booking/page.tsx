@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { exampleCatalogue } from '../../src/catalogue/fixtures';
 import { getProductBySlug } from '../../src/catalogue/catalogue';
 import BookingForm from './booking-form';
+import SiteNav from '../../src/components/site-nav';
 
 export default async function BookingPage({
   searchParams,
@@ -13,6 +14,7 @@ export default async function BookingPage({
 
   return (
     <main className="shell booking-shell">
+      <SiteNav />
       <Link className="back-link" href={product ? `/catalogue/${product.slug}` : '/catalogue'}>← Back</Link>
       <header className="page-header">
         <p className="eyebrow">Booking enquiry</p>

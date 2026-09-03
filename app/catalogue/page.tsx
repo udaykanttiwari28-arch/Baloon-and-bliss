@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { listActiveProducts } from '../../src/catalogue/catalogue';
 import { getCatalogueProducts } from '../../src/catalogue/storage';
+import SiteNav from '../../src/components/site-nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,15 +9,7 @@ export default async function CataloguePage() {
   const products = listActiveProducts(await getCatalogueProducts());
   return (
     <main className="shell">
-      <nav className="site-nav" aria-label="Main navigation">
-        <Link className="brand" href="/"><img className="brand-logo" src="/logo.png" alt="Balloons & Bliss SG" /></Link>
-        <div className="nav-links">
-          <a href="#packages">Packages</a>
-          <Link href="/gallery">Gallery</Link>
-          <a href="#why-bliss">Why us</a>
-          <Link href="/booking">Enquire</Link>
-        </div>
-      </nav>
+      <SiteNav />
       <header className="page-header hero-header">
         <div className="hero-copy">
           <p className="eyebrow">Singapore celebrations · made effortless</p>
