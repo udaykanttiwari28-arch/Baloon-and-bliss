@@ -73,11 +73,13 @@ export default function BookingForm({ selectedProduct }: BookingFormProps) {
       <legend>Package</legend>
       <label htmlFor="package">Selected package</label>
       <select id="package" name="package" defaultValue={selectedProduct ?? ''} required>
-        <option value="" disabled>Choose a package</option>
+        <option value="" disabled>Choose an option</option>
         <option value="classic-setup">Classic Setup — S$398</option>
         <option value="signature-setup">Signature Setup — S$450</option>
         <option value="premium-setup">Premium Setup — S$750</option>
+        <option value="custom-setup">Custom setup — I don&apos;t need a package</option>
       </select>
+      <p className="fixture-note">Choose Custom setup if you want something bespoke or would like us to recommend the right setup.</p>
     </fieldset>
     <fieldset>
       <legend>Event details</legend>

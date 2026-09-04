@@ -86,6 +86,7 @@ export async function POST(request: Request) {
 
   const packageNames: Record<string, string> = {
     'classic-setup': 'Classic Setup', 'signature-setup': 'Signature Setup', 'premium-setup': 'Premium Setup',
+    'custom-setup': 'Custom setup',
   };
   await sendNotification({
     reference: String(data), packageName: packageNames[String(body.package)] ?? String(body.package),

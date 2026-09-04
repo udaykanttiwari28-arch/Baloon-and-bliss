@@ -13,7 +13,7 @@ type Enquiry = {
 };
 
 const statuses: Status[] = ['New', 'Contacted', 'Confirmed', 'Cancelled'];
-const packageNames: Record<string, string> = { 'classic-setup': 'Classic Setup', 'signature-setup': 'Signature Setup', 'premium-setup': 'Premium Setup' };
+const packageNames: Record<string, string> = { 'classic-setup': 'Classic Setup', 'signature-setup': 'Signature Setup', 'premium-setup': 'Premium Setup', 'custom-setup': 'Custom setup' };
 
 function formatDate(value: string) { return new Intl.DateTimeFormat('en-SG', { dateStyle: 'medium' }).format(new Date(`${value}T00:00:00`)); }
 function formatTime(value: string) { const [hour, minute] = value.slice(0, 5).split(':').map(Number); return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`; }
