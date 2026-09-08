@@ -38,7 +38,7 @@ export const exampleCatalogue: Product[] = [
   {
     id: '00000000-0000-4000-8000-000000000003', categoryId: null,
     name: 'Premium Setup', slug: 'premium-setup',
-    description: 'The complete event styling experience — from the main backdrop to the entrance, walls, floor, and dessert table.', sku: 'BBSG-PREMIUM-001', frontImageName: 'd059efa2-d557-46dd-a1d5-4f91cf32f4f9.jpg',
+    description: 'The complete event styling experience — from the main backdrop to the entrance, walls, floor, and dessert table.', sku: 'BBSG-PREMIUM-001', frontImageName: 'Frozen.jpg',
     basePrice: { amountMinor: 75000, currency: 'SGD' }, tags: ['premium', 'full event styling'],
     included: ['3+ custom backdrops or 1 large custom backdrop up to 500cm wide', '3+ themed cutouts', '3 pedestals', 'Number light / number column', 'Welcome board', 'Entrance decor', 'Wall decor', 'Floor decor', 'Dessert table decor', 'Stress-free setup and delivery at your venue'], displayOrder: 3, isActive: true,
     options: [], addOns: optionalAddOns,
