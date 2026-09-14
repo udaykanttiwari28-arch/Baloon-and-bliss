@@ -62,9 +62,10 @@ export async function POST(request: Request) {
   const lead = { id: String(data.id), reference: String(data.reference), name, email, whatsapp_number: whatsapp };
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
   const guideUrl = process.env.ALVERNIA_GUIDE_URL ?? `${siteUrl}/celebration-guide.pdf`;
-  const [emailStatus, whatsappStatus] = await Promise.all([sendEmail(lead, guideUrl).catch((error) => { console.error('[alvernia] Email delivery failed.', error); return 'failed' as const; }), sendWhatsApp(lead, guideUrl).catch((error) => { console.error('[alvernia] WhatsApp delivery failed.', error); return 'failed' as const; })]);
-  await Promise.all([setStatus(lead.id, 'email', emailStatus), setStatus(lead.id, 'whatsapp', whatsappStatus)]);
-  const guideStatus = emailStatus === 'sent' && whatsappStatus === 'sent' ? 'sent' : emailStatus === 'failed' || whatsappStatus === 'failed' ? (emailStatus === 'sent' || whatsappStatus === 'sent' ? 'partial' : 'failed') : 'partial';
+  const emailStatus = await sendEmail(lead, guideUrl).catch((error) => { console.error('[alvernia] Email delivery failed.', error); return 'failed' as const; });
+  await setStatus(lead.id, 'email', emailStatus);
+  await setStatus(lead.id, 'whatsapp', 'not_requested');
+  const guideStatus = emailStatus === 'sent' ? 'sent' : 'failed';
   await setStatus(lead.id, 'guide', guideStatus);
-  return NextResponse.json({ reference: lead.reference, emailStatus, whatsappStatus, guideStatus });
+  return NextResponse.json({ reference: lead.reference, emailStatus, whatsappStatus: 'not_requested', guideStatus });
 }
