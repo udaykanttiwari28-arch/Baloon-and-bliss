@@ -31,6 +31,8 @@ export async function POST(request: Request) {
   const amountTotal = typeof body.amount_total_minor === 'number' ? Math.floor(body.amount_total_minor) : 0;
   const depositPaid = typeof body.deposit_paid_minor === 'number' ? Math.floor(body.deposit_paid_minor) : 0;
 
+  const leadType = body.lead_type === 'corporate' ? 'corporate' : 'individual';
+
   const row = {
     reference:            generateReference(),
     lead_kind:            'booking',
@@ -52,6 +54,8 @@ export async function POST(request: Request) {
     amount_total_minor:   amountTotal,
     deposit_paid_minor:   depositPaid,
     admin_notes:          typeof body.admin_notes === 'string' ? body.admin_notes.trim() || null : null,
+    lead_type:            leadType,
+    company_name:         leadType === 'corporate' && typeof body.company_name === 'string' ? body.company_name.trim() || null : null,
     status:               'New',
   };
 

@@ -40,6 +40,37 @@ export async function PATCH(
     updates.admin_notes = typeof body.admin_notes === 'string' ? body.admin_notes.trim() || null : null;
   }
 
+  if ('status' in body) {
+    const VALID = ['New', 'Contacted', 'Quoted', 'Confirmed', 'Cancelled', 'Lost'];
+    if (typeof body.status !== 'string' || !VALID.includes(body.status)) {
+      return NextResponse.json({ error: 'Invalid status value.' }, { status: 400 });
+    }
+    updates.status = body.status;
+  }
+
+  if ('lead_type' in body) {
+    if (body.lead_type !== 'individual' && body.lead_type !== 'corporate') {
+      return NextResponse.json({ error: 'lead_type must be individual or corporate.' }, { status: 400 });
+    }
+    updates.lead_type = body.lead_type;
+  }
+
+  if ('company_name' in body) {
+    updates.company_name = typeof body.company_name === 'string' ? body.company_name.trim() || null : null;
+  }
+
+  if ('follow_up_date' in body) {
+    updates.follow_up_date = typeof body.follow_up_date === 'string' && body.follow_up_date ? body.follow_up_date : null;
+  }
+
+  if ('follow_up_notes' in body) {
+    updates.follow_up_notes = typeof body.follow_up_notes === 'string' ? body.follow_up_notes.trim() || null : null;
+  }
+
+  if ('close_reason' in body) {
+    updates.close_reason = typeof body.close_reason === 'string' ? body.close_reason.trim() || null : null;
+  }
+
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No updatable fields provided.' }, { status: 400 });
   }
