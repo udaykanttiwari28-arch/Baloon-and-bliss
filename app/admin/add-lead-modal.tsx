@@ -170,7 +170,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
               {/* Name */}
               <label style={labelStyle}>
                 Customer Name *
-                <input name="name" type="text" required placeholder="e.g. Sarah Tan" style={inputStyle} />
+                <input name="name" type="text" required style={inputStyle} />
               </label>
 
               {/* Lead type toggle */}
@@ -201,7 +201,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
               {leadType === 'corporate' && (
                 <label style={labelStyle}>
                   Company Name
-                  <input name="company_name" type="text" placeholder="e.g. Acme Pte Ltd" style={inputStyle} />
+                  <input name="company_name" type="text" style={inputStyle} />
                 </label>
               )}
 
@@ -214,15 +214,15 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
                   </select>
                 </label>
                 {sourceChannel === 'Carousell' && (
-                  <label style={labelStyle}>Carousell ID<input name="carousell_id" type="text" placeholder="@username" style={inputStyle} /></label>
+                  <label style={labelStyle}>Carousell ID<input name="carousell_id" type="text" style={inputStyle} /></label>
                 )}
                 {sourceChannel === 'Facebook' && (
-                  <label style={labelStyle}>Facebook ID / Profile<input name="facebook_id" type="text" placeholder="facebook.com/name" style={inputStyle} /></label>
+                  <label style={labelStyle}>Facebook ID / Profile<input name="facebook_id" type="text" style={inputStyle} /></label>
                 )}
                 {sourceChannel !== 'Carousell' && sourceChannel !== 'Facebook' && (
                   <label style={labelStyle}>
                     Phone Number
-                    <input name="mobile" type="tel" placeholder="+65 9123 4567" style={inputStyle} />
+                    <input name="mobile" type="tel" style={inputStyle} />
                   </label>
                 )}
               </div>
@@ -230,7 +230,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
               {(sourceChannel === 'Carousell' || sourceChannel === 'Facebook') && (
                 <label style={labelStyle}>
                   Phone Number
-                  <input name="mobile" type="tel" placeholder="+65 9123 4567" style={inputStyle} />
+                  <input name="mobile" type="tel" style={inputStyle} />
                 </label>
               )}
 
@@ -241,7 +241,6 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
                     <input
                       name="email"
                       type="text"
-                      placeholder="customer@email.com"
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: '' })); }}
                       style={{ ...inputStyle, borderColor: fieldErrors.email ? '#be123c' : '#decbd5' }}
@@ -312,7 +311,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
 
               <label style={labelStyle}>
                 Venue
-                <input name="venue" type="text" placeholder="e.g. White Rabbit Restaurant, Dempsey" style={inputStyle} />
+                <input name="venue" type="text" style={inputStyle} />
               </label>
 
               <div>
@@ -322,7 +321,6 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
                     name="postal_code"
                     type="text"
                     maxLength={6}
-                    placeholder="6-digit postal code"
                     value={postalCode}
                     onChange={(e) => { setPostalCode(e.target.value.replace(/\D/g, '')); setFieldErrors((p) => ({ ...p, postal_code: '' })); }}
                     style={{ ...inputStyle, maxWidth: 160, borderColor: fieldErrors.postal_code ? '#be123c' : '#decbd5' }}
@@ -344,7 +342,6 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
                       type="number"
                       step="0.01"
                       min="0"
-                      placeholder="0.00"
                       value={amountTotal}
                       onChange={(e) => { setAmountTotal(e.target.value); setFieldErrors((p) => ({ ...p, amount_total: '', deposit_paid: '' })); }}
                       style={{ ...inputStyle, borderColor: fieldErrors.amount_total ? '#be123c' : '#decbd5' }}

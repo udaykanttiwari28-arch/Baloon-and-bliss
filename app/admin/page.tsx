@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { getBrowserSupabase } from '../../src/supabase/browser';
 import AvailabilityPanel from './availability-panel';
 import AddLeadModal from './add-lead-modal';
-import EnquiryDetailPanel, { EnquiryDetail } from './enquiry-detail-panel';
+import { EnquiryDetail } from './enquiry-detail-panel';
 import CalendarPanel from './calendar-panel';
 
 type Status = 'New' | 'Contacted' | 'Confirmed' | 'Cancelled' | 'Lost';
@@ -73,9 +74,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [filter, setFilter] = useState<'all' | 'alvernia' | 'admin'>('all');
+  const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('enquiries');
   const [showAddLead, setShowAddLead] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   async function loadEnquiries() {
     if (!supabase) return;
@@ -111,9 +112,6 @@ export default function AdminPage() {
     if (!error) setEnquiries((items) => items.map((item) => item.id === id ? { ...item, status } : item));
   }
 
-  function patchEnquiry(id: string, patch: Partial<Enquiry>) {
-    setEnquiries((items) => items.map((item) => item.id === id ? { ...item, ...patch } : item));
-  }
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f5f0f3' }}>
@@ -149,9 +147,19 @@ export default function AdminPage() {
     e.follow_up_date && e.follow_up_date <= today && !['Confirmed', 'Cancelled', 'Lost'].includes(e.status)
   ).length;
 
+  const searchLower = search.toLowerCase().trim();
   const visibleEnquiries = enquiries.filter((item) => {
-    if (filter === 'alvernia') return item.source === 'alvernia';
-    if (filter === 'admin') return item.source === 'admin';
+    if (filter === 'alvernia' && item.source !== 'alvernia') return false;
+    if (filter === 'admin' && item.source !== 'admin') return false;
+    if (searchLower) {
+      return (
+        item.name.toLowerCase().includes(searchLower) ||
+        item.reference.toLowerCase().includes(searchLower) ||
+        (item.email ?? '').toLowerCase().includes(searchLower) ||
+        (item.mobile ?? '').includes(searchLower) ||
+        (item.company_name ?? '').toLowerCase().includes(searchLower)
+      );
+    }
     return true;
   });
 
@@ -240,6 +248,16 @@ export default function AdminPage() {
           {/* Enquiries tab */}
           {activeTab === 'enquiries' && (
             <>
+              <div style={{ marginBottom: 12 }}>
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search by name, email, phone, reference…"
+                  style={{ width: '100%', padding: '10px 14px', border: '1px solid #f0dce7', borderRadius: 10, background: '#fff', color: '#24151c', font: 'inherit', fontSize: '.9rem', boxSizing: 'border-box' }}
+                />
+              </div>
+
               <div className="admin-filter-bar">
                 <span style={{ color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>Filter:</span>
                 {(['all', 'admin', 'alvernia'] as const).map((f) => (
@@ -273,9 +291,8 @@ export default function AdminPage() {
                 <section className="enquiry-list" aria-label="Booking enquiries">
                   {visibleEnquiries.map((item) => {
                     const isAlvernia = item.source === 'alvernia';
-                    const isExpanded = expandedId === item.id;
                     return (
-                      <article className={`enquiry-card${isAlvernia ? ' campaign-card' : ''}`} key={item.id}>
+                      <article className={`enquiry-card${isAlvernia ? ' campaign-card' : ''}`} key={item.id} style={{ cursor: 'pointer' }} onClick={() => { window.location.href = `/admin/enquiries/${item.id}`; }}>
                         <div className="enquiry-top">
                           <div>
                             <span className={`status-badge status-${item.status.toLowerCase()}`}>{item.status}</span>
@@ -338,27 +355,13 @@ export default function AdminPage() {
                           <p className="enquiry-notes" style={{ marginTop: 10 }}><strong>Notes:</strong> {item.special_requirements}</p>
                         )}
 
-                        <div className="enquiry-actions">
+                        <div className="enquiry-actions" onClick={(e) => e.stopPropagation()}>
                           {item.email && <a className="text-link" href={`mailto:${item.email}?subject=Your Balloons%20%26%20Bliss%20enquiry%20${item.reference}`}>Email →</a>}
                           {item.mobile && (item.whatsapp_opt_in || isAlvernia) && (
                             <a className="text-link" href={`https://wa.me/${item.mobile.replace(/\D/g, '')}`} target="_blank" rel="noreferrer">WhatsApp ↗</a>
                           )}
-                          <button
-                            type="button"
-                            className="text-button"
-                            onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                            style={{ fontSize: '.84rem' }}
-                          >
-                            {isExpanded ? 'Collapse ▲' : 'Details ▼'}
-                          </button>
+                          <Link href={`/admin/enquiries/${item.id}`} className="text-link" style={{ fontSize: '.84rem' }}>View Details →</Link>
                         </div>
-
-                        {isExpanded && (
-                          <EnquiryDetailPanel
-                            enquiry={item}
-                            onUpdated={(patch) => patchEnquiry(item.id, patch as Partial<Enquiry>)}
-                          />
-                        )}
                       </article>
                     );
                   })}
@@ -374,8 +377,7 @@ export default function AdminPage() {
           onClose={() => setShowAddLead(false)}
           onCreated={(created) => {
             setShowAddLead(false);
-            void loadEnquiries();
-            setExpandedId(created.id);
+            window.location.href = `/admin/enquiries/${created.id}`;
           }}
         />
       )}
