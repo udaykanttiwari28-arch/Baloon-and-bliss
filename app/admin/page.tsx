@@ -7,7 +7,7 @@ import AddLeadModal from './add-lead-modal';
 import EnquiryDetailPanel, { EnquiryDetail } from './enquiry-detail-panel';
 import CalendarPanel from './calendar-panel';
 
-type Status = 'New' | 'Contacted' | 'Confirmed' | 'Cancelled';
+type Status = 'New' | 'Contacted' | 'Confirmed' | 'Cancelled' | 'Lost';
 type Tab = 'enquiries' | 'calendar' | 'availability';
 
 type Enquiry = EnquiryDetail & {
@@ -19,15 +19,19 @@ type Enquiry = EnquiryDetail & {
   whatsapp_opt_in: boolean;
   created_at: string;
   lead_kind?: 'booking' | 'alvernia_lead';
+  lead_type?: 'individual' | 'corporate' | null;
+  company_name?: string | null;
   source?: string | null;
   campaign?: string | null;
   celebration_month?: string | null;
+  follow_up_date?: string | null;
+  close_reason?: string | null;
   guide_delivery_status?: string;
   email_delivery_status?: string;
   whatsapp_delivery_status?: string;
 };
 
-const statuses: Status[] = ['New', 'Contacted', 'Confirmed', 'Cancelled'];
+const statuses: Status[] = ['New', 'Contacted', 'Confirmed', 'Cancelled', 'Lost'];
 const packageNames: Record<string, string> = {
   'classic-setup': 'Classic Setup',
   'signature-setup': 'Signature Setup',
@@ -140,6 +144,10 @@ export default function AdminPage() {
     const bal = (e.amount_total_minor ?? 0) - (e.deposit_paid_minor ?? 0);
     return s + (bal > 0 ? bal : 0);
   }, 0);
+  const today = new Date().toISOString().slice(0, 10);
+  const followUpsDue = enquiries.filter((e) =>
+    e.follow_up_date && e.follow_up_date <= today && !['Confirmed', 'Cancelled', 'Lost'].includes(e.status)
+  ).length;
 
   const visibleEnquiries = enquiries.filter((item) => {
     if (filter === 'alvernia') return item.source === 'alvernia';
@@ -218,6 +226,7 @@ export default function AdminPage() {
             <div className="stat-card stat-green"><div className="stat-value">{confirmed.length}</div><div className="stat-label">Confirmed</div></div>
             <div className="stat-card stat-green"><div className="stat-value" style={{ fontSize: '1.1rem' }}>{fmtSGD(totalRevenue)}</div><div className="stat-label">Total Revenue</div></div>
             <div className="stat-card stat-red"><div className="stat-value" style={{ fontSize: '1.1rem' }}>{fmtSGD(totalOutstanding)}</div><div className="stat-label">Outstanding</div></div>
+            <div className="stat-card stat-amber"><div className="stat-value">{followUpsDue}</div><div className="stat-label">Follow-ups Due</div></div>
           </div>
 
           {message && <p className="form-error" role="alert" style={{ marginBottom: 16 }}>{message}</p>}
@@ -273,7 +282,9 @@ export default function AdminPage() {
                             {isAlvernia && <span className="campaign-badge">Alvernia</span>}
                             {item.source === 'admin' && <span style={{ marginLeft: 6, padding: '3px 8px', borderRadius: 999, background: '#f0f0ff', color: '#5b21b6', fontSize: '.68rem', fontWeight: 700 }}>Admin</span>}
                             {item.converted_to_customer_at && <span style={{ marginLeft: 6, padding: '3px 8px', borderRadius: 999, background: '#dcfce7', color: '#166534', fontSize: '.68rem', fontWeight: 700 }}>Customer</span>}
-                            <h2>{item.name}</h2>
+                            {item.lead_type === 'corporate' && <span style={{ marginLeft: 6, padding: '3px 8px', borderRadius: 999, background: '#ede9fe', color: '#5b21b6', fontSize: '.68rem', fontWeight: 700 }}>Corporate</span>}
+                            {item.follow_up_date && item.follow_up_date <= today && !['Confirmed', 'Cancelled', 'Lost'].includes(item.status) && <span style={{ marginLeft: 6, padding: '3px 8px', borderRadius: 999, background: '#fef3c7', color: '#92400e', fontSize: '.68rem', fontWeight: 700 }}>Follow-up Due</span>}
+                            <h2>{item.name}{item.company_name ? <span style={{ color: '#765d68', fontWeight: 400, fontSize: '.9rem' }}> · {item.company_name}</span> : null}</h2>
                             <p className="enquiry-reference">
                               {item.reference}
                               {item.package_slug && ` · ${packageNames[item.package_slug] ?? item.package_slug}`}
