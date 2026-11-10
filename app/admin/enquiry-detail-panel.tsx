@@ -104,6 +104,10 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
   const [isConverted, setIsConverted] = useState(!!enquiry.converted_to_customer_at);
   const [converting, setConverting] = useState(false);
   const [convertMsg, setConvertMsg] = useState('');
+  const [showConvertForm, setShowConvertForm] = useState(false);
+  const [convertSalutation, setConvertSalutation] = useState('');
+  const [convertFirstName, setConvertFirstName] = useState(() => enquiry.name.split(' ')[0] ?? '');
+  const [convertLastName, setConvertLastName] = useState(() => enquiry.name.split(' ').slice(1).join(' '));
 
   // Checklist
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
@@ -193,12 +197,22 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
   }
 
   async function convertToCustomer() {
+    if (!convertFirstName.trim()) { setConvertMsg('First name is required.'); return; }
     setConverting(true); setConvertMsg('');
-    const res = await fetch(`/api/admin/enquiries/${enquiry.id}/convert`, { method: 'POST' });
+    const res = await fetch(`/api/admin/enquiries/${enquiry.id}/convert`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        salutation: convertSalutation || null,
+        first_name: convertFirstName.trim(),
+        last_name: convertLastName.trim() || null,
+      }),
+    });
     const j = await res.json() as { success?: boolean; error?: string };
     setConverting(false);
     if (res.ok) {
       setIsConverted(true);
+      setShowConvertForm(false);
       onUpdated({ converted_to_customer_at: new Date().toISOString() });
       const cr = await fetch(`/api/admin/enquiries/${enquiry.id}/checklist`);
       const cj = await cr.json() as { items?: ChecklistItem[] };
@@ -490,11 +504,46 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
           </div>
         ) : (
           <div style={{ display: 'grid', gap: 12 }}>
-            <p style={{ margin: 0, color: '#765d68', fontSize: '.88rem' }}>This lead has not been converted to a customer yet. Converting will create a customer record and seed the booking checklist.</p>
-            <button className="button" type="button" onClick={convertToCustomer} disabled={converting}
-              style={{ justifySelf: 'start', padding: '10px 20px', fontSize: '.88rem', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
-              {converting ? 'Converting…' : 'Convert to Customer'}
-            </button>
+            <p style={{ margin: 0, color: '#765d68', fontSize: '.88rem' }}>Converting will create a customer record and seed the booking checklist.</p>
+            {!showConvertForm ? (
+              <button className="button" type="button" onClick={() => setShowConvertForm(true)}
+                style={{ justifySelf: 'start', padding: '10px 20px', fontSize: '.88rem', border: 'none', cursor: 'pointer' }}>
+                Convert to Customer
+              </button>
+            ) : (
+              <div style={{ background: '#fff8fb', border: '1px solid #f0dce7', borderRadius: 12, padding: '16px 18px', display: 'grid', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 1fr', gap: 10 }}>
+                  <label style={{ display: 'grid', gap: 4, fontSize: '.84rem', fontWeight: 700, color: '#765d68' }}>
+                    Salutation
+                    <select value={convertSalutation} onChange={(e) => setConvertSalutation(e.target.value)}
+                      style={{ padding: '8px 10px', border: '1px solid #decbd5', borderRadius: 8, background: '#fff', font: 'inherit', fontSize: '.86rem' }}>
+                      <option value="">—</option>
+                      {['Mr', 'Mrs', 'Ms', 'Dr', 'Prof'].map((s) => <option key={s}>{s}</option>)}
+                    </select>
+                  </label>
+                  <label style={{ display: 'grid', gap: 4, fontSize: '.84rem', fontWeight: 700, color: '#765d68' }}>
+                    First Name *
+                    <input value={convertFirstName} onChange={(e) => setConvertFirstName(e.target.value)}
+                      style={{ padding: '8px 10px', border: '1px solid #decbd5', borderRadius: 8, background: '#fff', font: 'inherit', fontSize: '.86rem' }} />
+                  </label>
+                  <label style={{ display: 'grid', gap: 4, fontSize: '.84rem', fontWeight: 700, color: '#765d68' }}>
+                    Last Name
+                    <input value={convertLastName} onChange={(e) => setConvertLastName(e.target.value)}
+                      style={{ padding: '8px 10px', border: '1px solid #decbd5', borderRadius: 8, background: '#fff', font: 'inherit', fontSize: '.86rem' }} />
+                  </label>
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button className="button" type="button" onClick={convertToCustomer} disabled={converting}
+                    style={{ padding: '9px 20px', fontSize: '.88rem', border: 'none', cursor: 'pointer' }}>
+                    {converting ? 'Converting…' : 'Confirm & Convert'}
+                  </button>
+                  <button type="button" onClick={() => setShowConvertForm(false)}
+                    style={{ padding: '9px 16px', fontSize: '.88rem', border: '1px solid #f0dce7', borderRadius: 8, background: '#fff', color: '#765d68', cursor: 'pointer', font: 'inherit' }}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
         {convertMsg && <p style={{ margin: '8px 0 0', color: convertMsg.startsWith('Error') ? '#be123c' : '#166534', fontSize: '.84rem', fontWeight: 700 }}>{convertMsg}</p>}

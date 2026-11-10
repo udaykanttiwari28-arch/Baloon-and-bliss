@@ -130,13 +130,14 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const json = await res.json() as { id?: string; reference?: string; error?: string };
-      if (!res.ok) { setError(json.error ?? 'Something went wrong.'); setSubmitting(false); return; }
+      let json: { id?: string; reference?: string; error?: string } = {};
+      try { json = await res.json() as typeof json; } catch { /* non-JSON response */ }
+      if (!res.ok) { setError(json.error ?? `Server error (${res.status}). Check Vercel logs.`); setSubmitting(false); return; }
       if (json.id && json.reference) {
         onCreated({ id: json.id, reference: json.reference, name: payload.name });
       }
-    } catch {
-      setError('Network error. Please try again.');
+    } catch (err) {
+      setError(`Network error: ${String(err)}`);
       setSubmitting(false);
     }
   }

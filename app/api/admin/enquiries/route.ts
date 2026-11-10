@@ -20,8 +20,10 @@ function generateReference(): string {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+  let body: Record<string, unknown> | null = null;
+  try { body = await request.json() as Record<string, unknown>; } catch { /* handled below */ }
   if (!body) return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+  try {
 
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 200) : '';
   if (!name) return NextResponse.json({ error: 'Customer name is required.' }, { status: 400 });
@@ -106,4 +108,8 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ id: data.id, reference: data.reference }, { status: 201 });
+  } catch (err) {
+    console.error('[admin/enquiries] Unhandled error:', err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }

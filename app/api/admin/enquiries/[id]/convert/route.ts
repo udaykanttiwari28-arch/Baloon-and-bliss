@@ -8,10 +8,16 @@ function adminClient() {
   return createClient(url, key);
 }
 
-export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     const supabase = adminClient();
+
+    const body = await req.json().catch(() => ({})) as {
+      salutation?: string;
+      first_name?: string;
+      last_name?: string;
+    };
 
     const { data: enquiry, error: fetchErr } = await supabase
       .from('booking_enquiries')
@@ -21,6 +27,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
     if (fetchErr || !enquiry) return NextResponse.json({ error: 'Enquiry not found.' }, { status: 404 });
     if (enquiry.converted_to_customer_at) return NextResponse.json({ error: 'Already converted.' }, { status: 409 });
+
+    const firstName = body.first_name?.trim() || enquiry.name.split(' ')[0] || enquiry.name;
+    const lastName = body.last_name?.trim() || enquiry.name.split(' ').slice(1).join(' ') || null;
+    const salutation = body.salutation?.trim() || null;
 
     // Create or find customer record
     let customerId: string | null = null;
@@ -36,7 +46,12 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     }
 
     if (!customerId) {
-      const customerRow: Record<string, unknown> = { name: enquiry.name };
+      const customerRow: Record<string, unknown> = {
+        name: enquiry.name,
+        first_name: firstName,
+        last_name: lastName || null,
+        salutation,
+      };
       if (enquiry.email) customerRow.email = enquiry.email;
       if (enquiry.mobile) customerRow.mobile = enquiry.mobile;
       const { data: newCustomer, error: custErr } = await supabase
