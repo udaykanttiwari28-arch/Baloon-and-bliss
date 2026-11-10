@@ -7,9 +7,10 @@ import AvailabilityPanel from './availability-panel';
 import AddLeadModal from './add-lead-modal';
 import { EnquiryDetail } from './enquiry-detail-panel';
 import CalendarPanel from './calendar-panel';
+import CustomersPanel from './customers-panel';
 
 type Status = 'New' | 'Contacted' | 'Confirmed' | 'Cancelled' | 'Lost';
-type Tab = 'enquiries' | 'calendar' | 'availability';
+type Tab = 'customers' | 'enquiries' | 'calendar' | 'availability';
 
 type Enquiry = EnquiryDetail & {
   package_slug: string | null;
@@ -41,6 +42,7 @@ const packageNames: Record<string, string> = {
 };
 
 const NAV: { key: Tab; icon: string; label: string }[] = [
+  { key: 'customers',    icon: '👥', label: 'Customers' },
   { key: 'enquiries',    icon: '📋', label: 'Leads & Enquiries' },
   { key: 'calendar',     icon: '📅', label: 'Calendar' },
   { key: 'availability', icon: '🚫', label: 'Availability' },
@@ -164,6 +166,7 @@ export default function AdminPage() {
   });
 
   const tabTitle: Record<Tab, string> = {
+    customers: 'Customers',
     enquiries: 'Leads & Enquiries',
     calendar: 'Booking Calendar',
     availability: 'Availability',
@@ -238,6 +241,9 @@ export default function AdminPage() {
           </div>
 
           {message && <p className="form-error" role="alert" style={{ marginBottom: 16 }}>{message}</p>}
+
+          {/* Customers tab */}
+          {activeTab === 'customers' && <CustomersPanel />}
 
           {/* Calendar tab */}
           {activeTab === 'calendar' && <CalendarPanel />}
