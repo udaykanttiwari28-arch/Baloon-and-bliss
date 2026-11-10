@@ -1,30 +1,36 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import InvoicePanel from './invoice-panel';
 
 export interface EnquiryDetail {
   id: string;
   reference: string;
   name: string;
-  email?: string;
-  mobile?: string;
-  event_date?: string;
-  start_time?: string;
-  end_time?: string;
-  venue?: string;
-  postal_code?: string;
-  special_requirements?: string;
-  package_slug?: string;
+  email?: string | null;
+  mobile?: string | null;
+  event_date?: string | null;
+  start_time?: string | null;
+  end_time?: string | null;
+  venue?: string | null;
+  postal_code?: string | null;
+  special_requirements?: string | null;
+  package_slug?: string | null;
   amount_total_minor: number;
   deposit_paid_minor: number;
-  admin_notes?: string;
-  mockup_storage_path?: string;
-  source_channel?: string;
-  carousell_id?: string;
-  facebook_id?: string;
-  celebration_type?: string;
+  admin_notes?: string | null;
+  mockup_storage_path?: string | null;
+  source_channel?: string | null;
+  carousell_id?: string | null;
+  facebook_id?: string | null;
+  celebration_type?: string | null;
   status: string;
   converted_to_customer_at?: string | null;
+  lead_type?: 'individual' | 'corporate' | null;
+  company_name?: string | null;
+  follow_up_date?: string | null;
+  follow_up_notes?: string | null;
+  close_reason?: string | null;
 }
 
 interface EnquiryDetailPanelProps {
@@ -47,7 +53,7 @@ function formatTime(value: string) {
   return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`;
 }
 function fmtSGD(minor: number) {
-  return `SGD ${(minor / 100).toFixed(2)}`;
+  return `S$${(minor / 100).toFixed(2)}`;
 }
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -70,6 +76,7 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
   const [amountInput, setAmountInput] = useState((enquiry.amount_total_minor / 100).toFixed(2));
   const [depositInput, setDepositInput] = useState((enquiry.deposit_paid_minor / 100).toFixed(2));
   const [notes, setNotes] = useState(enquiry.admin_notes ?? '');
+  const [notesSavedMsg, setNotesSavedMsg] = useState('');
   const [mockupPath, setMockupPath] = useState(enquiry.mockup_storage_path ?? '');
   const [savingPayment, setSavingPayment] = useState(false);
   const [savingNotes, setSavingNotes] = useState(false);
@@ -77,6 +84,21 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
   const [paymentMsg, setPaymentMsg] = useState('');
   const [mockupMsg, setMockupMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Lead info
+  const [companyName, setCompanyName] = useState(enquiry.company_name ?? '');
+  const [savingCompany, setSavingCompany] = useState(false);
+
+  // Follow-up
+  const [followUpDate, setFollowUpDate] = useState(enquiry.follow_up_date ?? '');
+  const [followUpNotes, setFollowUpNotes] = useState(enquiry.follow_up_notes ?? '');
+  const [savingFollowUp, setSavingFollowUp] = useState(false);
+  const [followUpMsg, setFollowUpMsg] = useState('');
+
+  // Close reason
+  const [closeReason, setCloseReason] = useState(enquiry.close_reason ?? '');
+  const [savingCloseReason, setSavingCloseReason] = useState(false);
+  const [closeReasonMsg, setCloseReasonMsg] = useState('');
 
   // Convert to customer
   const [isConverted, setIsConverted] = useState(!!enquiry.converted_to_customer_at);
@@ -94,6 +116,82 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
       .then((j: { items?: ChecklistItem[] }) => { setChecklistItems(j.items ?? []); setChecklistLoaded(true); });
   }, [enquiry.id]);
 
+  // Follow-up overdue check
+  const isFollowUpOverdue = followUpDate
+    && !['Confirmed', 'Cancelled', 'Lost'].includes(enquiry.status)
+    && followUpDate <= new Date().toISOString().slice(0, 10);
+
+  const totalMinor = Math.round(parseFloat(amountInput) * 100) || 0;
+  const paidMinor = Math.round(parseFloat(depositInput) * 100) || 0;
+  const balance = totalMinor - paidMinor;
+
+  async function patch(body: Record<string, unknown>) {
+    const res = await fetch(`/api/admin/enquiries/${enquiry.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return res;
+  }
+
+  async function savePayment() {
+    setSavingPayment(true); setPaymentMsg('');
+    const res = await patch({ amount_total_minor: totalMinor, deposit_paid_minor: paidMinor });
+    setSavingPayment(false);
+    if (res.ok) {
+      onUpdated({ amount_total_minor: totalMinor, deposit_paid_minor: paidMinor });
+      setPaymentMsg('Saved ✓');
+      setTimeout(() => setPaymentMsg(''), 2000);
+    } else {
+      const j = await res.json() as { error?: string };
+      setPaymentMsg(j.error ?? 'Error saving');
+    }
+  }
+
+  async function saveNotes() {
+    setSavingNotes(true);
+    const res = await patch({ admin_notes: notes });
+    setSavingNotes(false);
+    if (res.ok) {
+      onUpdated({ admin_notes: notes });
+      setNotesSavedMsg('Saved ✓');
+      setTimeout(() => setNotesSavedMsg(''), 2000);
+    }
+  }
+
+  async function saveCompanyName() {
+    setSavingCompany(true);
+    const res = await patch({ company_name: companyName || null });
+    setSavingCompany(false);
+    if (res.ok) onUpdated({ company_name: companyName || null });
+  }
+
+  async function saveFollowUp() {
+    setSavingFollowUp(true); setFollowUpMsg('');
+    const res = await patch({ follow_up_date: followUpDate || null, follow_up_notes: followUpNotes || null });
+    setSavingFollowUp(false);
+    if (res.ok) {
+      onUpdated({ follow_up_date: followUpDate || null, follow_up_notes: followUpNotes || null });
+      setFollowUpMsg('Saved ✓');
+      setTimeout(() => setFollowUpMsg(''), 2000);
+    } else {
+      setFollowUpMsg('Error saving.');
+    }
+  }
+
+  async function saveCloseReason() {
+    setSavingCloseReason(true); setCloseReasonMsg('');
+    const res = await patch({ close_reason: closeReason || null });
+    setSavingCloseReason(false);
+    if (res.ok) {
+      onUpdated({ close_reason: closeReason || null });
+      setCloseReasonMsg('Saved ✓');
+      setTimeout(() => setCloseReasonMsg(''), 2000);
+    } else {
+      setCloseReasonMsg('Error saving.');
+    }
+  }
+
   async function convertToCustomer() {
     setConverting(true); setConvertMsg('');
     const res = await fetch(`/api/admin/enquiries/${enquiry.id}/convert`, { method: 'POST' });
@@ -102,7 +200,6 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
     if (res.ok) {
       setIsConverted(true);
       onUpdated({ converted_to_customer_at: new Date().toISOString() });
-      // Reload checklist — convert API seeds defaults
       const cr = await fetch(`/api/admin/enquiries/${enquiry.id}/checklist`);
       const cj = await cr.json() as { items?: ChecklistItem[] };
       setChecklistItems(cj.items ?? []);
@@ -140,33 +237,6 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
     await fetch(`/api/admin/enquiries/${enquiry.id}/checklist/${itemId}`, { method: 'DELETE' });
   }
 
-  const totalMinor = Math.round(parseFloat(amountInput) * 100) || 0;
-  const paidMinor = Math.round(parseFloat(depositInput) * 100) || 0;
-  const balance = totalMinor - paidMinor;
-
-  async function savePayment() {
-    setSavingPayment(true); setPaymentMsg('');
-    const res = await fetch(`/api/admin/enquiries/${enquiry.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount_total_minor: totalMinor, deposit_paid_minor: paidMinor }),
-    });
-    setSavingPayment(false);
-    if (res.ok) { onUpdated({ amount_total_minor: totalMinor, deposit_paid_minor: paidMinor }); setPaymentMsg('Saved'); setTimeout(() => setPaymentMsg(''), 2000); }
-    else { const j = await res.json() as { error?: string }; setPaymentMsg(j.error ?? 'Error saving'); }
-  }
-
-  async function saveNotes() {
-    setSavingNotes(true);
-    const res = await fetch(`/api/admin/enquiries/${enquiry.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ admin_notes: notes }),
-    });
-    setSavingNotes(false);
-    if (res.ok) onUpdated({ admin_notes: notes });
-  }
-
   async function uploadMockup(file: File) {
     if (file.size > 10 * 1024 * 1024) { setMockupMsg('File too large (max 10 MB).'); return; }
     setUploading(true); setMockupMsg('Uploading…');
@@ -175,8 +245,9 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
     setUploading(false);
     if (res.ok) {
       const j = await res.json() as { path?: string };
-      setMockupPath(j.path ?? file.name);
-      onUpdated({ mockup_storage_path: j.path ?? file.name });
+      const p = j.path ?? file.name;
+      setMockupPath(p);
+      onUpdated({ mockup_storage_path: p });
       setMockupMsg('');
     } else {
       const j = await res.json() as { error?: string };
@@ -188,18 +259,23 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
     setUploading(true); setMockupMsg('Removing…');
     const res = await fetch(`/api/admin/enquiries/${enquiry.id}/mockup`, { method: 'DELETE' });
     setUploading(false);
-    if (res.ok) { setMockupPath(''); onUpdated({ mockup_storage_path: undefined }); setMockupMsg(''); }
+    if (res.ok) { setMockupPath(''); onUpdated({ mockup_storage_path: null }); setMockupMsg(''); }
     else { const j = await res.json() as { error?: string }; setMockupMsg(j.error ?? 'Error removing'); }
   }
 
-  const mockupFilename = mockupPath ? mockupPath.split('/').pop() ?? mockupPath : '';
+  const mockupFilename = mockupPath ? (mockupPath.split('/').pop() ?? mockupPath) : '';
 
   function BalanceChip() {
+    if (totalMinor === 0 && paidMinor === 0) return null;
     if (totalMinor === 0) return null;
     if (balance <= 0) return <span style={{ padding: '5px 11px', borderRadius: 999, background: '#dcfce7', color: '#166534', fontSize: '.78rem', fontWeight: 700 }}>Paid in Full</span>;
     if (paidMinor === 0) return <span style={{ padding: '5px 11px', borderRadius: 999, background: '#fef2f2', color: '#991b1b', fontSize: '.78rem', fontWeight: 700 }}>Unpaid: {fmtSGD(balance)}</span>;
     return <span style={{ padding: '5px 11px', borderRadius: 999, background: '#fef3c7', color: '#92400e', fontSize: '.78rem', fontWeight: 700 }}>Partial: {fmtSGD(balance)} remaining</span>;
   }
+
+  const iStyle: React.CSSProperties = { padding: '10px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c' };
+
+  const showClosed = enquiry.status === 'Cancelled' || enquiry.status === 'Lost';
 
   return (
     <div style={{ padding: '20px 22px 24px', background: '#fffbf7', borderTop: '1px solid #f0dce7', display: 'grid', gap: 28 }}>
@@ -211,7 +287,6 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
           <InfoRow label="Name" value={enquiry.name} />
           <InfoRow label="Email" value={enquiry.email ? <a href={`mailto:${enquiry.email}`} style={{ color: '#db2777', textDecoration: 'none' }}>{enquiry.email}</a> : null} />
           <InfoRow label="Phone" value={enquiry.mobile ? <a href={`tel:${enquiry.mobile}`} style={{ color: '#db2777', textDecoration: 'none' }}>{enquiry.mobile}</a> : null} />
-          <InfoRow label="Source" value={enquiry.source_channel} />
           {enquiry.carousell_id && <InfoRow label="Carousell ID" value={enquiry.carousell_id} />}
           {enquiry.facebook_id && <InfoRow label="Facebook ID" value={enquiry.facebook_id} />}
           <InfoRow label="Occasion" value={enquiry.celebration_type} />
@@ -223,52 +298,126 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
         </div>
       </div>
 
-      {/* 2. Payment Tracking */}
+      {/* 2. Lead Info */}
+      <div>
+        <SectionHeading>Lead Info</SectionHeading>
+        <div style={{ display: 'grid', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>Type:</span>
+            {enquiry.lead_type === 'corporate'
+              ? <span style={{ padding: '4px 12px', borderRadius: 999, background: '#ede9fe', color: '#5b21b6', fontSize: '.78rem', fontWeight: 700 }}>🏢 Corporate</span>
+              : <span style={{ padding: '4px 12px', borderRadius: 999, background: '#f1f5f9', color: '#475569', fontSize: '.78rem', fontWeight: 700 }}>👤 Individual</span>
+            }
+            {enquiry.source_channel && (
+              <span style={{ padding: '4px 12px', borderRadius: 999, background: '#fce7f3', color: '#db2777', fontSize: '.78rem', fontWeight: 700 }}>via {enquiry.source_channel}</span>
+            )}
+          </div>
+          {enquiry.lead_type === 'corporate' && (
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+              <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700, flex: 1 }}>
+                Company Name
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="e.g. Acme Pte Ltd"
+                  style={iStyle}
+                />
+              </label>
+              <button
+                className="button"
+                type="button"
+                onClick={saveCompanyName}
+                disabled={savingCompany}
+                style={{ margin: 0, padding: '10px 16px', fontSize: '.86rem', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >
+                {savingCompany ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 3. Payment Tracking */}
       <div>
         <SectionHeading>Payment Tracking</SectionHeading>
         <div style={{ display: 'grid', gap: 14 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 12, alignItems: 'end' }}>
             <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>
               Quoted Amount (SGD)
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={amountInput}
-                onChange={(e) => setAmountInput(e.target.value)}
-                style={{ padding: '10px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c' }}
-              />
+              <input type="number" step="0.01" min="0" value={amountInput} onChange={(e) => setAmountInput(e.target.value)} style={iStyle} />
             </label>
             <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>
               Deposit Paid (SGD)
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={depositInput}
-                onChange={(e) => setDepositInput(e.target.value)}
-                style={{ padding: '10px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c' }}
-              />
+              <input type="number" step="0.01" min="0" value={depositInput} onChange={(e) => setDepositInput(e.target.value)} style={iStyle} />
             </label>
-            <button
-              className="button"
-              type="button"
-              onClick={savePayment}
-              disabled={savingPayment}
-              style={{ marginTop: 0, padding: '11px 18px', fontSize: '.88rem', whiteSpace: 'nowrap' }}
-            >
+            <button className="button" type="button" onClick={savePayment} disabled={savingPayment}
+              style={{ marginTop: 0, padding: '11px 18px', fontSize: '.88rem', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
               {savingPayment ? 'Saving…' : 'Save'}
             </button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>Balance:</span>
             <BalanceChip />
-            {paymentMsg && <span style={{ color: paymentMsg === 'Saved' ? '#166534' : '#be123c', fontSize: '.82rem', fontWeight: 700 }}>{paymentMsg}</span>}
+            {paymentMsg && <span style={{ color: paymentMsg.includes('✓') ? '#166534' : '#be123c', fontSize: '.82rem', fontWeight: 700 }}>{paymentMsg}</span>}
           </div>
         </div>
       </div>
 
-      {/* 3. Requirements & Notes */}
+      {/* 4. Follow-up */}
+      <div>
+        <SectionHeading>Follow-up</SectionHeading>
+        <div style={{ display: 'grid', gap: 12 }}>
+          {isFollowUpOverdue && (
+            <div style={{ padding: '10px 14px', borderRadius: 10, background: '#fef3c7', color: '#92400e', fontSize: '.86rem', fontWeight: 700 }}>
+              ⚠ Follow-up overdue — please action this lead.
+            </div>
+          )}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>
+              Follow-up Date
+              <input type="date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} style={iStyle} />
+            </label>
+          </div>
+          <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>
+            Follow-up Notes
+            <textarea rows={2} value={followUpNotes} onChange={(e) => setFollowUpNotes(e.target.value)}
+              placeholder="What to follow up on…"
+              style={{ ...iStyle, resize: 'vertical' }} />
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="button" type="button" onClick={saveFollowUp} disabled={savingFollowUp}
+              style={{ margin: 0, padding: '9px 18px', fontSize: '.86rem', border: 'none', cursor: 'pointer' }}>
+              {savingFollowUp ? 'Saving…' : 'Save Follow-up'}
+            </button>
+            {followUpMsg && <span style={{ color: followUpMsg.includes('✓') ? '#166534' : '#be123c', fontSize: '.82rem', fontWeight: 700 }}>{followUpMsg}</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Close Reason (only when Cancelled or Lost) */}
+      {showClosed && (
+        <div>
+          <SectionHeading>Close Reason</SectionHeading>
+          <div style={{ display: 'grid', gap: 12 }}>
+            <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>
+              Why didn&apos;t this close?
+              <textarea rows={3} value={closeReason} onChange={(e) => setCloseReason(e.target.value)}
+                placeholder="e.g. Budget too high, chose another vendor, event cancelled…"
+                style={{ ...iStyle, resize: 'vertical' }} />
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button className="button" type="button" onClick={saveCloseReason} disabled={savingCloseReason}
+                style={{ margin: 0, padding: '9px 18px', fontSize: '.86rem', border: 'none', cursor: 'pointer' }}>
+                {savingCloseReason ? 'Saving…' : 'Save'}
+              </button>
+              {closeReasonMsg && <span style={{ color: closeReasonMsg.includes('✓') ? '#166534' : '#be123c', fontSize: '.82rem', fontWeight: 700 }}>{closeReasonMsg}</span>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Requirements & Notes */}
       <div>
         <SectionHeading>Requirements &amp; Notes</SectionHeading>
         <div style={{ display: 'grid', gap: 14 }}>
@@ -280,35 +429,23 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
           )}
           <label style={{ display: 'grid', gap: 6, color: '#765d68', fontSize: '.86rem', fontWeight: 700 }}>
             Admin Notes
-            <textarea
-              rows={3}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              onBlur={saveNotes}
+            <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={saveNotes}
               placeholder="Internal notes (auto-saved on blur)…"
-              style={{ padding: '10px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c', resize: 'vertical' }}
-            />
+              style={{ ...iStyle, resize: 'vertical' }} />
           </label>
-          {savingNotes && <span style={{ color: '#765d68', fontSize: '.8rem' }}>Saving notes…</span>}
+          {savingNotes && <span style={{ color: '#765d68', fontSize: '.8rem' }}>Saving…</span>}
+          {!savingNotes && notesSavedMsg && <span style={{ color: '#166534', fontSize: '.8rem', fontWeight: 700 }}>{notesSavedMsg}</span>}
         </div>
       </div>
 
-      {/* 4. Agreed Mockup */}
+      {/* 7. Agreed Mockup */}
       <div>
         <SectionHeading>Agreed Mockup</SectionHeading>
         {mockupPath ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '14px 16px', borderRadius: 12, border: '1px solid #f0dce7', background: '#fff' }}>
             <span style={{ fontSize: '1.4rem' }}>📎</span>
             <span style={{ flex: 1, color: '#24151c', fontSize: '.9rem', fontWeight: 700, wordBreak: 'break-all' }}>{mockupFilename}</span>
-            <a
-              href={`/api/admin/enquiries/${enquiry.id}/mockup`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-link"
-              style={{ fontSize: '.86rem' }}
-            >
-              View ↗
-            </a>
+            <a href={`/api/admin/enquiries/${enquiry.id}/mockup`} target="_blank" rel="noreferrer" className="text-link" style={{ fontSize: '.86rem' }}>View ↗</a>
             <button className="text-button" type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} style={{ fontSize: '.86rem' }}>Replace</button>
             <button className="text-button" type="button" onClick={removeMockup} disabled={uploading} style={{ fontSize: '.86rem', color: '#be123c' }}>Remove</button>
           </div>
@@ -321,16 +458,11 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
           >
             <span style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }}>🖼️</span>
             <p style={{ margin: '0 0 4px', color: '#24151c', fontWeight: 700, fontSize: '.92rem' }}>Upload agreed mockup</p>
-            <p style={{ margin: 0, color: '#765d68', fontSize: '.82rem' }}>Image or PDF, max 10 MB · click or drag &amp; drop</p>
+            <p style={{ margin: 0, color: '#765d68', fontSize: '.82rem' }}>Image or PDF · max 10 MB · click or drag &amp; drop</p>
           </div>
         )}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*,application/pdf"
-          style={{ display: 'none' }}
-          onChange={(e) => { const file = e.target.files?.[0]; if (file) void uploadMockup(file); e.target.value = ''; }}
-        />
+        <input ref={fileInputRef} type="file" accept="image/*,application/pdf" style={{ display: 'none' }}
+          onChange={(e) => { const file = e.target.files?.[0]; if (file) void uploadMockup(file); e.target.value = ''; }} />
         {mockupMsg && (
           <p style={{ margin: '8px 0 0', color: mockupMsg.includes('fail') || mockupMsg.includes('large') || mockupMsg.includes('Error') ? '#be123c' : '#765d68', fontSize: '.84rem', fontWeight: 700 }}>
             {mockupMsg}
@@ -338,7 +470,18 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
         )}
       </div>
 
-      {/* 5. Convert to Customer */}
+      {/* 8. Invoices */}
+      <div>
+        <SectionHeading>Invoices</SectionHeading>
+        <InvoicePanel
+          enquiryId={enquiry.id}
+          enquiryName={enquiry.name}
+          amountTotalMinor={enquiry.amount_total_minor}
+          packageSlug={enquiry.package_slug}
+        />
+      </div>
+
+      {/* 9. Customer Status */}
       <div>
         <SectionHeading>Customer Status</SectionHeading>
         {isConverted ? (
@@ -346,15 +489,10 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
             <span style={{ padding: '5px 14px', borderRadius: 999, background: '#dcfce7', color: '#166534', fontSize: '.82rem', fontWeight: 700 }}>✓ Converted to Customer</span>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <div style={{ display: 'grid', gap: 12 }}>
             <p style={{ margin: 0, color: '#765d68', fontSize: '.88rem' }}>This lead has not been converted to a customer yet. Converting will create a customer record and seed the booking checklist.</p>
-            <button
-              className="button"
-              type="button"
-              onClick={convertToCustomer}
-              disabled={converting}
-              style={{ padding: '10px 20px', fontSize: '.88rem', whiteSpace: 'nowrap' }}
-            >
+            <button className="button" type="button" onClick={convertToCustomer} disabled={converting}
+              style={{ justifySelf: 'start', padding: '10px 20px', fontSize: '.88rem', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
               {converting ? 'Converting…' : 'Convert to Customer'}
             </button>
           </div>
@@ -362,7 +500,7 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
         {convertMsg && <p style={{ margin: '8px 0 0', color: convertMsg.startsWith('Error') ? '#be123c' : '#166534', fontSize: '.84rem', fontWeight: 700 }}>{convertMsg}</p>}
       </div>
 
-      {/* 6. Booking Checklist */}
+      {/* 10. Booking Checklist */}
       <div>
         <SectionHeading>Booking Checklist</SectionHeading>
         {!checklistLoaded ? (
@@ -374,39 +512,20 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
             )}
             {checklistItems.map((item) => (
               <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: item.is_done ? '#f0fdf4' : '#fff', border: `1px solid ${item.is_done ? '#bbf7d0' : '#f0dce7'}` }}>
-                <input
-                  type="checkbox"
-                  checked={item.is_done}
-                  onChange={() => void toggleItem(item)}
-                  style={{ width: 17, height: 17, accentColor: '#166534', cursor: 'pointer', flexShrink: 0 }}
-                />
+                <input type="checkbox" checked={item.is_done} onChange={() => void toggleItem(item)}
+                  style={{ width: 17, height: 17, accentColor: '#166534', cursor: 'pointer', flexShrink: 0 }} />
                 <span style={{ flex: 1, fontSize: '.9rem', color: item.is_done ? '#166534' : '#24151c', textDecoration: item.is_done ? 'line-through' : 'none' }}>{item.item_name}</span>
-                <button
-                  type="button"
-                  onClick={() => void deleteChecklistItem(item.id)}
+                <button type="button" onClick={() => void deleteChecklistItem(item.id)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#be123c', fontSize: '.8rem', padding: '2px 6px', borderRadius: 6 }}
-                  aria-label={`Remove ${item.item_name}`}
-                >
-                  ✕
-                </button>
+                  aria-label={`Remove ${item.item_name}`}>✕</button>
               </div>
             ))}
             <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-              <input
-                type="text"
-                placeholder="Add custom item…"
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
+              <input type="text" placeholder="Add custom item…" value={newItem} onChange={(e) => setNewItem(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void addChecklistItem(); } }}
-                style={{ flex: 1, padding: '9px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c', fontSize: '.88rem' }}
-              />
-              <button
-                type="button"
-                className="button"
-                onClick={addChecklistItem}
-                disabled={!newItem.trim()}
-                style={{ padding: '9px 16px', fontSize: '.88rem', whiteSpace: 'nowrap' }}
-              >
+                style={{ flex: 1, padding: '9px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c', fontSize: '.88rem' }} />
+              <button type="button" className="button" onClick={addChecklistItem} disabled={!newItem.trim()}
+                style={{ padding: '9px 16px', fontSize: '.88rem', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer' }}>
                 + Add
               </button>
             </div>
