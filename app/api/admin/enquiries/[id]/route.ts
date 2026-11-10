@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+const VALID_STATUSES = ['New', 'Contacted', 'Confirmed', 'Cancelled', 'Lost'] as const;
+const VALID_LEAD_TYPES = ['individual', 'corporate'] as const;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const POSTAL_RE = /^[0-9]{6}$/;
+
 function getServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -20,6 +25,13 @@ export async function PATCH(
 
   const updates: Record<string, unknown> = {};
 
+  if ('status' in body) {
+    if (!VALID_STATUSES.includes(body.status as typeof VALID_STATUSES[number])) {
+      return NextResponse.json({ error: `status must be one of: ${VALID_STATUSES.join(', ')}.` }, { status: 400 });
+    }
+    updates.status = body.status;
+  }
+
   if ('amount_total_minor' in body) {
     const val = body.amount_total_minor;
     if (typeof val !== 'number' || !Number.isInteger(val) || val < 0) {
@@ -33,6 +45,10 @@ export async function PATCH(
     if (typeof val !== 'number' || !Number.isInteger(val) || val < 0) {
       return NextResponse.json({ error: 'deposit_paid_minor must be a non-negative integer.' }, { status: 400 });
     }
+    const total = ('amount_total_minor' in updates ? updates.amount_total_minor : null) as number | null;
+    if (total !== null && (val as number) > total) {
+      return NextResponse.json({ error: 'deposit_paid_minor cannot exceed amount_total_minor.' }, { status: 400 });
+    }
     updates.deposit_paid_minor = val;
   }
 
@@ -40,17 +56,9 @@ export async function PATCH(
     updates.admin_notes = typeof body.admin_notes === 'string' ? body.admin_notes.trim() || null : null;
   }
 
-  if ('status' in body) {
-    const VALID = ['New', 'Contacted', 'Quoted', 'Confirmed', 'Cancelled', 'Lost'];
-    if (typeof body.status !== 'string' || !VALID.includes(body.status)) {
-      return NextResponse.json({ error: 'Invalid status value.' }, { status: 400 });
-    }
-    updates.status = body.status;
-  }
-
   if ('lead_type' in body) {
-    if (body.lead_type !== 'individual' && body.lead_type !== 'corporate') {
-      return NextResponse.json({ error: 'lead_type must be individual or corporate.' }, { status: 400 });
+    if (!VALID_LEAD_TYPES.includes(body.lead_type as typeof VALID_LEAD_TYPES[number])) {
+      return NextResponse.json({ error: `lead_type must be 'individual' or 'corporate'.` }, { status: 400 });
     }
     updates.lead_type = body.lead_type;
   }
@@ -60,7 +68,7 @@ export async function PATCH(
   }
 
   if ('follow_up_date' in body) {
-    updates.follow_up_date = typeof body.follow_up_date === 'string' && body.follow_up_date ? body.follow_up_date : null;
+    updates.follow_up_date = body.follow_up_date || null;
   }
 
   if ('follow_up_notes' in body) {
@@ -69,6 +77,22 @@ export async function PATCH(
 
   if ('close_reason' in body) {
     updates.close_reason = typeof body.close_reason === 'string' ? body.close_reason.trim() || null : null;
+  }
+
+  if ('email' in body) {
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : null;
+    if (email && !EMAIL_RE.test(email)) {
+      return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
+    }
+    updates.email = email || null;
+  }
+
+  if ('postal_code' in body) {
+    const pc = typeof body.postal_code === 'string' ? body.postal_code.trim() : null;
+    if (pc && !POSTAL_RE.test(pc)) {
+      return NextResponse.json({ error: 'Postal code must be exactly 6 digits.' }, { status: 400 });
+    }
+    updates.postal_code = pc || null;
   }
 
   if (Object.keys(updates).length === 0) {
@@ -87,7 +111,7 @@ export async function PATCH(
 
   if (error) {
     console.error('[admin/enquiries/:id] Update failed:', error);
-    return NextResponse.json({ error: 'Could not update enquiry.' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
