@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface EnquiryDetail {
   id: string;
@@ -24,6 +24,7 @@ export interface EnquiryDetail {
   facebook_id?: string;
   celebration_type?: string;
   status: string;
+  converted_to_customer_at?: string | null;
 }
 
 interface EnquiryDetailPanelProps {
@@ -63,6 +64,8 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   return <h3 style={{ margin: '0 0 14px', fontFamily: 'Georgia, serif', fontSize: '1.1rem', borderBottom: '1px solid #f0dce7', paddingBottom: 8 }}>{children}</h3>;
 }
 
+type ChecklistItem = { id: string; item_name: string; is_done: boolean; sort_order: number };
+
 export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetailPanelProps) {
   const [amountInput, setAmountInput] = useState((enquiry.amount_total_minor / 100).toFixed(2));
   const [depositInput, setDepositInput] = useState((enquiry.deposit_paid_minor / 100).toFixed(2));
@@ -74,6 +77,68 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
   const [paymentMsg, setPaymentMsg] = useState('');
   const [mockupMsg, setMockupMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Convert to customer
+  const [isConverted, setIsConverted] = useState(!!enquiry.converted_to_customer_at);
+  const [converting, setConverting] = useState(false);
+  const [convertMsg, setConvertMsg] = useState('');
+
+  // Checklist
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
+  const [newItem, setNewItem] = useState('');
+  const [checklistLoaded, setChecklistLoaded] = useState(false);
+
+  useEffect(() => {
+    void fetch(`/api/admin/enquiries/${enquiry.id}/checklist`)
+      .then((r) => r.json())
+      .then((j: { items?: ChecklistItem[] }) => { setChecklistItems(j.items ?? []); setChecklistLoaded(true); });
+  }, [enquiry.id]);
+
+  async function convertToCustomer() {
+    setConverting(true); setConvertMsg('');
+    const res = await fetch(`/api/admin/enquiries/${enquiry.id}/convert`, { method: 'POST' });
+    const j = await res.json() as { success?: boolean; error?: string };
+    setConverting(false);
+    if (res.ok) {
+      setIsConverted(true);
+      onUpdated({ converted_to_customer_at: new Date().toISOString() });
+      // Reload checklist — convert API seeds defaults
+      const cr = await fetch(`/api/admin/enquiries/${enquiry.id}/checklist`);
+      const cj = await cr.json() as { items?: ChecklistItem[] };
+      setChecklistItems(cj.items ?? []);
+      setConvertMsg('Converted! Default checklist created.');
+      setTimeout(() => setConvertMsg(''), 3000);
+    } else {
+      setConvertMsg(j.error ?? 'Error converting.');
+    }
+  }
+
+  async function toggleItem(item: ChecklistItem) {
+    const next = !item.is_done;
+    setChecklistItems((prev) => prev.map((i) => i.id === item.id ? { ...i, is_done: next } : i));
+    await fetch(`/api/admin/enquiries/${enquiry.id}/checklist/${item.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_done: next }),
+    });
+  }
+
+  async function addChecklistItem() {
+    const name = newItem.trim();
+    if (!name) return;
+    const res = await fetch(`/api/admin/enquiries/${enquiry.id}/checklist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_name: name }),
+    });
+    const j = await res.json() as { item?: ChecklistItem };
+    if (j.item) { setChecklistItems((prev) => [...prev, j.item!]); setNewItem(''); }
+  }
+
+  async function deleteChecklistItem(itemId: string) {
+    setChecklistItems((prev) => prev.filter((i) => i.id !== itemId));
+    await fetch(`/api/admin/enquiries/${enquiry.id}/checklist/${itemId}`, { method: 'DELETE' });
+  }
 
   const totalMinor = Math.round(parseFloat(amountInput) * 100) || 0;
   const paidMinor = Math.round(parseFloat(depositInput) * 100) || 0;
@@ -270,6 +335,87 @@ export default function EnquiryDetailPanel({ enquiry, onUpdated }: EnquiryDetail
           <p style={{ margin: '8px 0 0', color: mockupMsg.includes('fail') || mockupMsg.includes('large') || mockupMsg.includes('Error') ? '#be123c' : '#765d68', fontSize: '.84rem', fontWeight: 700 }}>
             {mockupMsg}
           </p>
+        )}
+      </div>
+
+      {/* 5. Convert to Customer */}
+      <div>
+        <SectionHeading>Customer Status</SectionHeading>
+        {isConverted ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ padding: '5px 14px', borderRadius: 999, background: '#dcfce7', color: '#166534', fontSize: '.82rem', fontWeight: 700 }}>✓ Converted to Customer</span>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <p style={{ margin: 0, color: '#765d68', fontSize: '.88rem' }}>This lead has not been converted to a customer yet. Converting will create a customer record and seed the booking checklist.</p>
+            <button
+              className="button"
+              type="button"
+              onClick={convertToCustomer}
+              disabled={converting}
+              style={{ padding: '10px 20px', fontSize: '.88rem', whiteSpace: 'nowrap' }}
+            >
+              {converting ? 'Converting…' : 'Convert to Customer'}
+            </button>
+          </div>
+        )}
+        {convertMsg && <p style={{ margin: '8px 0 0', color: convertMsg.startsWith('Error') ? '#be123c' : '#166534', fontSize: '.84rem', fontWeight: 700 }}>{convertMsg}</p>}
+      </div>
+
+      {/* 6. Booking Checklist */}
+      <div>
+        <SectionHeading>Booking Checklist</SectionHeading>
+        {!checklistLoaded ? (
+          <p style={{ color: '#765d68', fontSize: '.88rem' }}>Loading…</p>
+        ) : (
+          <div style={{ display: 'grid', gap: 8 }}>
+            {checklistItems.length === 0 && (
+              <p style={{ margin: 0, color: '#765d68', fontSize: '.88rem' }}>No items yet. Convert to customer to seed the default checklist, or add items below.</p>
+            )}
+            {checklistItems.map((item) => (
+              <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: item.is_done ? '#f0fdf4' : '#fff', border: `1px solid ${item.is_done ? '#bbf7d0' : '#f0dce7'}` }}>
+                <input
+                  type="checkbox"
+                  checked={item.is_done}
+                  onChange={() => void toggleItem(item)}
+                  style={{ width: 17, height: 17, accentColor: '#166534', cursor: 'pointer', flexShrink: 0 }}
+                />
+                <span style={{ flex: 1, fontSize: '.9rem', color: item.is_done ? '#166534' : '#24151c', textDecoration: item.is_done ? 'line-through' : 'none' }}>{item.item_name}</span>
+                <button
+                  type="button"
+                  onClick={() => void deleteChecklistItem(item.id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#be123c', fontSize: '.8rem', padding: '2px 6px', borderRadius: 6 }}
+                  aria-label={`Remove ${item.item_name}`}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              <input
+                type="text"
+                placeholder="Add custom item…"
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void addChecklistItem(); } }}
+                style={{ flex: 1, padding: '9px 12px', border: '1px solid #decbd5', borderRadius: 10, background: '#fffdfd', font: 'inherit', color: '#24151c', fontSize: '.88rem' }}
+              />
+              <button
+                type="button"
+                className="button"
+                onClick={addChecklistItem}
+                disabled={!newItem.trim()}
+                style={{ padding: '9px 16px', fontSize: '.88rem', whiteSpace: 'nowrap' }}
+              >
+                + Add
+              </button>
+            </div>
+            {checklistItems.length > 0 && (
+              <p style={{ margin: '4px 0 0', color: '#765d68', fontSize: '.8rem' }}>
+                {checklistItems.filter((i) => i.is_done).length} / {checklistItems.length} done
+              </p>
+            )}
+          </div>
         )}
       </div>
     </div>
