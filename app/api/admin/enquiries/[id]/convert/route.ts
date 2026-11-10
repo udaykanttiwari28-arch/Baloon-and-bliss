@@ -36,9 +36,12 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     }
 
     if (!customerId) {
+      const customerRow: Record<string, unknown> = { name: enquiry.name };
+      if (enquiry.email) customerRow.email = enquiry.email;
+      if (enquiry.mobile) customerRow.mobile = enquiry.mobile;
       const { data: newCustomer, error: custErr } = await supabase
         .from('customers')
-        .insert({ name: enquiry.name, email: enquiry.email ?? null, mobile: enquiry.mobile ?? null })
+        .insert(customerRow)
         .select('id')
         .single();
       if (custErr || !newCustomer) return NextResponse.json({ error: custErr?.message ?? 'Failed to create customer.' }, { status: 500 });
