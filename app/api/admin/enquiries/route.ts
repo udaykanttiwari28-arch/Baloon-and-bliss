@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+export const dynamic = 'force-dynamic';
+
 const VALID_PACKAGE_SLUGS = ['classic-setup', 'signature-setup', 'premium-setup', 'custom-setup'] as const;
 const VALID_LEAD_TYPES = ['individual', 'corporate'] as const;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
