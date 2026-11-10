@@ -11,6 +11,39 @@ function getServiceClient() {
   return createClient(url, key);
 }
 
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  if (!id) return NextResponse.json({ error: 'Missing enquiry id.' }, { status: 400 });
+
+  let supabase;
+  try { supabase = getServiceClient(); } catch {
+    return NextResponse.json({ error: 'Service temporarily unavailable.' }, { status: 503 });
+  }
+
+  const { data: row, error: fetchError } = await supabase
+    .from('booking_enquiries')
+    .select('mockup_storage_path')
+    .eq('id', id)
+    .single();
+
+  if (fetchError || !row?.mockup_storage_path) {
+    return NextResponse.json({ error: 'No mockup found for this enquiry.' }, { status: 404 });
+  }
+
+  const { data: signedData, error: signError } = await supabase.storage
+    .from('mockups')
+    .createSignedUrl(row.mockup_storage_path, 3600);
+
+  if (signError || !signedData) {
+    return NextResponse.json({ error: 'Could not generate view URL.' }, { status: 500 });
+  }
+
+  return NextResponse.redirect(signedData.signedUrl);
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

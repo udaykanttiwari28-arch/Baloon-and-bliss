@@ -22,7 +22,7 @@ interface Invoice {
   invoice_number: string;
   status: InvoiceStatus;
   total_minor: number;
-  issued_at: string | null;
+  issued_date: string | null;
   due_date: string | null;
 }
 
@@ -83,9 +83,11 @@ export default function InvoicePanel({ enquiryId, enquiryName, amountTotalMinor,
   const [invoiceNotes, setInvoiceNotes] = useState('');
 
   useEffect(() => {
-    void fetch(`/api/admin/enquiries/${enquiryId}/invoices`)
+    fetch(`/api/admin/enquiries/${enquiryId}/invoices`)
       .then((r) => r.json())
-      .then((j: { invoices?: Invoice[] }) => { setInvoices(j.invoices ?? []); setLoaded(true); });
+      .then((j: { invoices?: Invoice[] }) => { setInvoices(j.invoices ?? []); })
+      .catch(() => { /* table may not exist yet */ })
+      .finally(() => setLoaded(true));
   }, [enquiryId]);
 
   const subtotal = lineItems.reduce((s, item) => s + item.qty * item.unit_price, 0);
@@ -116,7 +118,7 @@ export default function InvoicePanel({ enquiryId, enquiryName, amountTotalMinor,
       subtotal_minor: Math.round(subtotal * 100),
       gst_minor: Math.round(gst * 100),
       total_minor: Math.round(total * 100),
-      issued_at: issuedAt || null,
+      issued_date: issuedAt || null,
       due_date: dueDate || null,
       notes: invoiceNotes || null,
     };
@@ -167,7 +169,7 @@ export default function InvoicePanel({ enquiryId, enquiryName, amountTotalMinor,
               <span style={{ fontWeight: 700, fontSize: '.88rem', color: '#24151c', minWidth: 140 }}>{inv.invoice_number}</span>
               <StatusChip status={inv.status} />
               <span style={{ color: '#24151c', fontWeight: 700, fontSize: '.9rem', minWidth: 90 }}>{fmtSGD(inv.total_minor)}</span>
-              <span style={{ color: '#765d68', fontSize: '.8rem', flex: 1 }}>Issued {fmtDate(inv.issued_at)}</span>
+              <span style={{ color: '#765d68', fontSize: '.8rem', flex: 1 }}>Issued {fmtDate(inv.issued_date)}</span>
               <select
                 value={inv.status}
                 onChange={(e) => void updateStatus(inv.id, e.target.value as InvoiceStatus)}
