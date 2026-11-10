@@ -306,6 +306,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
                     <input
                       name="start_time"
                       type="time"
+                      step={900}
                       value={startTime}
                       onChange={(e) => { setStartTime(e.target.value); setFieldErrors((p) => ({ ...p, end_time: '' })); }}
                       style={inputStyle}
@@ -318,6 +319,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
                     <input
                       name="end_time"
                       type="time"
+                      step={900}
                       value={endTime}
                       onChange={(e) => { setEndTime(e.target.value); setFieldErrors((p) => ({ ...p, end_time: '' })); }}
                       style={{ ...inputStyle, borderColor: fieldErrors.end_time ? '#be123c' : '#decbd5' }}
