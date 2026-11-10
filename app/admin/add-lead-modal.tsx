@@ -8,7 +8,7 @@ interface AddLeadModalProps {
 }
 
 const SOURCE_CHANNELS = ['Instagram', 'Google Ad', 'TikTok', 'Carousell', 'Facebook', 'WhatsApp', 'Referral', 'Other'];
-const OCCASIONS = ['1st Birthday', '2nd Birthday', '3rd Birthday', 'Kids Birthday', 'Teen Birthday', 'Adult Birthday', 'Baby Shower', 'Gender Reveal', 'Wedding', 'Solemnisation', 'Proposal', 'Corporate'];
+const OCCASIONS = ['1st Birthday', '2nd Birthday', '3rd Birthday', 'Kids Birthday', 'Teen Birthday', 'Adult Birthday', 'Baby Shower', 'Gender Reveal', 'Wedding', 'Solemnisation', 'Proposal', 'Corporate', 'Other'];
 const PACKAGES = [
   { value: 'classic-setup', label: 'Classic Setup' },
   { value: 'signature-setup', label: 'Signature Setup' },
@@ -47,6 +47,8 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
   const [endTime, setEndTime] = useState('');
   const [amountTotal, setAmountTotal] = useState('');
   const [depositPaid, setDepositPaid] = useState('');
+  const [occasion, setOccasion] = useState('');
+  const [occasionOther, setOccasionOther] = useState('');
 
   function validate(data: {
     email: string; postal_code: string;
@@ -111,7 +113,7 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
       facebook_id: data.facebook_id || null,
       mobile: data.mobile || null,
       email: email.trim() || null,
-      celebration_type: data.occasion || null,
+      celebration_type: occasion === 'Other' ? (occasionOther.trim() || 'Other') : (occasion || null),
       event_date: data.event_date || null,
       start_time: startTime || null,
       end_time: endTime || null,
@@ -258,13 +260,28 @@ export default function AddLeadModal({ onClose, onCreated }: AddLeadModalProps) 
               <SectionLabel>Event</SectionLabel>
 
               <div style={gridStyle}>
-                <label style={labelStyle}>
-                  Occasion
-                  <select name="occasion" style={inputStyle}>
-                    <option value="">— Select occasion —</option>
-                    {OCCASIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </label>
+                <div style={{ display: 'grid', gap: 6 }}>
+                  <label style={labelStyle}>
+                    Occasion
+                    <select
+                      value={occasion}
+                      onChange={(e) => { setOccasion(e.target.value); if (e.target.value !== 'Other') setOccasionOther(''); }}
+                      style={inputStyle}
+                    >
+                      <option value="">— Select occasion —</option>
+                      {OCCASIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </label>
+                  {occasion === 'Other' && (
+                    <input
+                      type="text"
+                      value={occasionOther}
+                      onChange={(e) => setOccasionOther(e.target.value)}
+                      style={inputStyle}
+                      autoFocus
+                    />
+                  )}
+                </div>
                 <label style={labelStyle}>
                   Package
                   <select name="package_slug" style={inputStyle}>
