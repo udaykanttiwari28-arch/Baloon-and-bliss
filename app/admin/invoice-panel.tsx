@@ -111,9 +111,8 @@ export default function InvoicePanel({ enquiryId, enquiryName, amountTotalMinor,
     const payload = {
       line_items: lineItems.map((item) => ({
         description: item.description,
-        qty: item.qty,
+        quantity: item.qty,
         unit_price_minor: Math.round(item.unit_price * 100),
-        line_total_minor: Math.round(item.qty * item.unit_price * 100),
       })),
       subtotal_minor: Math.round(subtotal * 100),
       gst_minor: Math.round(gst * 100),
