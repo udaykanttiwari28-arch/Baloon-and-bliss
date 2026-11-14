@@ -75,6 +75,8 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
   const [filter, setFilter] = useState<'all' | 'alvernia' | 'admin'>('all');
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('enquiries');
@@ -108,6 +110,17 @@ export default function AdminPage() {
     setLoading(false);
   }
 
+  async function sendForgot(e: React.FormEvent) {
+    e.preventDefault(); if (!supabase) return;
+    setLoading(true); setMessage('');
+    const { error } = await supabase.auth.resetPasswordForEmail(loginEmail, {
+      redirectTo: `${window.location.origin}/admin/reset-password`,
+    });
+    setLoading(false);
+    if (error) setMessage(error.message);
+    else setForgotSent(true);
+  }
+
   async function updateStatus(id: string, status: Status) {
     if (!supabase) return;
     const { error } = await supabase.from('booking_enquiries').update({ status }).eq('id', id);
@@ -125,14 +138,40 @@ export default function AdminPage() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f5f0f3', padding: 20 }}>
       <div className="admin-login">
         <p className="eyebrow">Private workspace</p>
-        <h1 style={{ fontSize: '2rem', marginBottom: 8 }}>Admin sign in</h1>
-        <p className="lede" style={{ fontSize: '.95rem', marginBottom: 24 }}>Sign in to manage leads and bookings.</p>
-        <form className="booking-form" onSubmit={signIn}>
-          <label>Email<input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} autoComplete="email" required /></label>
-          <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></label>
-          {message && <p className="form-error" role="alert">{message}</p>}
-          <button className="button" type="submit" style={{ border: 'none', cursor: 'pointer' }}>Sign in</button>
-        </form>
+        <h1 style={{ fontSize: '2rem', marginBottom: 8 }}>{forgotMode ? 'Reset password' : 'Admin sign in'}</h1>
+        <p className="lede" style={{ fontSize: '.95rem', marginBottom: 24 }}>
+          {forgotMode ? "Enter your email and we'll send a reset link." : 'Sign in to manage leads and bookings.'}
+        </p>
+
+        {forgotMode ? (
+          forgotSent ? (
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ color: '#166534', fontWeight: 700, marginBottom: 16 }}>Check your email for a reset link.</p>
+              <button type="button" className="text-link" onClick={() => { setForgotMode(false); setForgotSent(false); setMessage(''); }}>Back to sign in</button>
+            </div>
+          ) : (
+            <form className="booking-form" onSubmit={sendForgot}>
+              <label>Email<input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} autoComplete="email" required /></label>
+              {message && <p className="form-error" role="alert">{message}</p>}
+              <button className="button" type="submit" disabled={loading} style={{ border: 'none', cursor: 'pointer' }}>
+                {loading ? 'Sending…' : 'Send reset link'}
+              </button>
+              <button type="button" className="text-link" style={{ textAlign: 'center', marginTop: 4 }} onClick={() => { setForgotMode(false); setMessage(''); }}>
+                Back to sign in
+              </button>
+            </form>
+          )
+        ) : (
+          <form className="booking-form" onSubmit={signIn}>
+            <label>Email<input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} autoComplete="email" required /></label>
+            <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></label>
+            {message && <p className="form-error" role="alert">{message}</p>}
+            <button className="button" type="submit" style={{ border: 'none', cursor: 'pointer' }}>Sign in</button>
+            <button type="button" className="text-link" style={{ textAlign: 'center', fontSize: '.86rem' }} onClick={() => { setForgotMode(true); setMessage(''); }}>
+              Forgot password?
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

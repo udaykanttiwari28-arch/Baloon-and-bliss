@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getBrowserSupabase } from '../../src/supabase/browser';
 
 interface Customer {
   id: string;
@@ -21,6 +20,8 @@ interface LinkedEnquiry {
   event_date?: string | null;
   celebration_type?: string | null;
   status: string;
+  email?: string | null;
+  mobile?: string | null;
 }
 
 function formatDate(iso: string) {
@@ -36,36 +37,32 @@ function displayName(c: Customer) {
 }
 
 export default function CustomersPanel() {
-  const supabase = useMemo(() => { try { return getBrowserSupabase(); } catch { return null; } }, []);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [enquiryMap, setEnquiryMap] = useState<Record<string, LinkedEnquiry>>({});
   const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    if (!supabase) { setLoaded(true); return; }
+    fetch('/api/admin/customers')
+      .then((r) => r.json())
+      .then((j: { customers?: Customer[]; enquiries?: LinkedEnquiry[] }) => {
+        const custs = j.customers ?? [];
+        const enqs = j.enquiries ?? [];
+        setCustomers(custs);
 
-    Promise.all([
-      supabase.from('customers').select('id, name, salutation, first_name, last_name, email, mobile, created_at').order('created_at', { ascending: false }),
-      supabase.from('booking_enquiries').select('id, reference, event_date, celebration_type, status, email, mobile').not('converted_to_customer_at', 'is', null),
-    ]).then(([custRes, enqRes]) => {
-      const custs = (custRes.data ?? []) as Customer[];
-      setCustomers(custs);
-
-      // Build a map: match enquiry to customer by email or mobile
-      const enqs = (enqRes.data ?? []) as (LinkedEnquiry & { email?: string | null; mobile?: string | null })[];
-      const map: Record<string, LinkedEnquiry> = {};
-      for (const c of custs) {
-        const match = enqs.find((e) =>
-          (c.email && e.email && c.email === e.email) ||
-          (c.mobile && e.mobile && c.mobile === e.mobile)
-        );
-        if (match) map[c.id] = match;
-      }
-      setEnquiryMap(map);
-      setLoaded(true);
-    }).catch(() => setLoaded(true));
-  }, [supabase]);
+        const map: Record<string, LinkedEnquiry> = {};
+        for (const c of custs) {
+          const match = enqs.find((e) =>
+            (c.email && e.email && c.email === e.email) ||
+            (c.mobile && e.mobile && c.mobile === e.mobile)
+          );
+          if (match) map[c.id] = match;
+        }
+        setEnquiryMap(map);
+      })
+      .catch(() => { /* show empty state */ })
+      .finally(() => setLoaded(true));
+  }, []);
 
   const searchLower = search.toLowerCase().trim();
   const visible = customers.filter((c) => {
