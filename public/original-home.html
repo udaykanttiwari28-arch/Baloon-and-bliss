@@ -1190,39 +1190,11 @@
 // Each entry is a Cloudinary URL. The grid, mobile carousel and
 // lightbox all build themselves automatically from it.
 // ════════════════════════════════════════════════════════
-var GALLERY_IMAGES = [
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050121/WhatsApp_Image_2026-07-26_at_3.07.37_PM_dnuuj7.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050121/WhatsApp_Image_2026-07-26_at_3.07.37_PM_2_gzxmge.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050121/WhatsApp_Image_2026-07-26_at_3.07.37_PM_1_ldsvna.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050332/image_1_dqtqyh.png',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1785050169/image_y1lepi.png',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161062/IMG_1504_mqu5km.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269511/WhatsApp_Image_2026-07-17_at_2.24.30_PM_bs8uqb.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269304/WhatsApp_Image_2026-07-14_at_10.21.11_PM_msy9yy.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269292/WhatsApp_Image_2026-07-14_at_10.21.11_PM_1_c4ma91.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269275/WhatsApp_Image_2026-07-14_at_10.21.11_PM_2_jobmeq.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1784269265/WhatsApp_Image_2026-07-14_at_10.21.11_PM_4_fglqlk.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161062/WhatsApp_Image_2026-06-11_at_2.48.29_PM_lrmbdr.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161062/WhatsApp_Image_2026-06-11_at_2.48.21_PM_jdp4kf.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-06-11_at_2.45.23_PM_r6frxr.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-05-12_at_7.43.34_PM_znykyj.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-05-30_at_8.14.26_PM_ef51yy.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161060/WhatsApp_Image_2026-03-31_at_10.33.17_AM_1_grytxm.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1781161061/WhatsApp_Image_2026-05-01_at_7.48.30_PM_o5pwmr.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1780215410/WhatsApp_Image_2026-05-23_at_12.57.51_PM_by2whu.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1780215410/WhatsApp_Image_2026-05-30_at_8.14.33_PM_slxdfs.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_1_qfx1w5.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/Photo_6_rvrigc.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_2_ponizt.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_3_jbw4zs.jpg',
-  'https://res.cloudinary.com/da18y0i7k/image/upload/v1783163761/photo_4_cwtr3e.jpg'
-];
-
-// Build desktop grid + mobile carousel from the list
-(function() {
+// Build desktop grid + mobile carousel from an image list
+function buildGallery(images) {
   var grid = document.getElementById('galleryGrid');
   var track = document.getElementById('carouselTrack');
-  GALLERY_IMAGES.forEach(function(src, i) {
+  images.forEach(function(src, i) {
     var alt = 'Balloons and Bliss event decoration ' + (i + 1);
     if (grid) {
       var item = document.createElement('div');
@@ -1238,7 +1210,17 @@ var GALLERY_IMAGES = [
       track.appendChild(slide);
     }
   });
-})();
+}
+
+// Fetch images from Supabase via our API
+fetch('/api/gallery')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.images && data.images.length > 0) {
+      buildGallery(data.images);
+    }
+  })
+  .catch(function() {});
 
 // ── Generate floating bubbles
 const colors = ['#F472B6','#A855F7','#14B8A6','#F59E0B','#60A5FA','#FB7185'];
