@@ -82,7 +82,12 @@ export async function POST(request: Request) {
       name: String(body.name).trim(), email: String(body.email).trim().toLowerCase(), mobile: String(body.mobile).trim(), whatsapp_opt_in: body.whatsappOptIn === 'true',
     },
   });
-  if (error) return NextResponse.json({ error: 'We could not save your enquiry. Please try again.' }, { status: 500 });
+  if (error) {
+    console.error('[booking-enquiry] submit_booking_enquiry failed.', { code: error.code, message: error.message, details: error.details, hint: error.hint });
+    // P0001 = `raise exception` inside the function: a validation message meant for the customer.
+    if (error.code === 'P0001') return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: 'We could not save your enquiry. Please try again.' }, { status: 500 });
+  }
 
   const packageNames: Record<string, string> = {
     'classic-setup': 'Classic Setup', 'signature-setup': 'Signature Setup', 'premium-setup': 'Premium Setup',
