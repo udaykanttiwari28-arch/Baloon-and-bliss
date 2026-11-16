@@ -117,46 +117,67 @@ export async function getCatalogueProducts(): Promise<Product[]> {
       return getFixtureProducts(supabase);
     }
 
-    return (data as DbRow[]).map((row) => mapDbProduct(row, supabase));
+    return withStorageImages(supabase, (data as DbRow[]).map((row) => mapDbProduct(row, supabase)));
   } catch {
     return getFixtureProducts(supabase);
   }
 }
 
+/**
+ * Lists images uploaded to Supabase Storage under `packages/<slug>/`, putting
+ * the product's front image (if known) first. Returns [] when none exist.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getStorageImages(supabase: any, product: Product): Promise<Product['images']> {
+  const folder = `packages/${product.slug}`;
+  const frontImageName = product.frontImageName
+    ?? exampleCatalogue.find((fixture) => fixture.slug === product.slug)?.frontImageName;
+  const { data, error } = await supabase.storage.from(bucket).list(folder, {
+    limit: 100,
+    sortBy: { column: 'name', order: 'asc' },
+  });
+  if (error || !data?.length) return [];
+
+  return (data as { name: string; id: string }[])
+    .filter((file) => file.name && file.id)
+    .sort((a, b) => {
+      if (a.name === frontImageName) return -1;
+      if (b.name === frontImageName) return 1;
+      return a.name.localeCompare(b.name);
+    })
+    .map((file, index) => {
+      const storagePath = `${folder}/${file.name}`;
+      const { data: publicUrl } = supabase.storage.from(bucket).getPublicUrl(storagePath);
+      return {
+        id: `${product.id}-storage-${index}`,
+        productId: product.id,
+        storagePath,
+        imageUrl: publicUrl.publicUrl,
+        altText: `${product.name} image ${index + 1}`,
+        isPrimary: index === 0,
+        displayOrder: index + 1,
+      };
+    });
+}
+
+/** Uses Storage folder images for any product that has no usable images of its own. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function withStorageImages(supabase: any, products: Product[]): Promise<Product[]> {
+  return Promise.all(products.map(async (product) => {
+    if (product.images.some((image) => image.imageUrl)) return product;
+    try {
+      const images = await getStorageImages(supabase, product);
+      return images.length ? { ...product, images } : product;
+    } catch {
+      return product;
+    }
+  }));
+}
+
 /** Legacy fixture loader — augments fixture products with Supabase Storage images. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getFixtureProducts(supabase: any): Promise<Product[]> {
-  return Promise.all(exampleCatalogue.map(async (product) => {
-    const folder = `packages/${product.slug}`;
-    const { data, error } = await supabase.storage.from(bucket).list(folder, {
-      limit: 100,
-      sortBy: { column: 'name', order: 'asc' },
-    });
-    if (error || !data?.length) return product;
-
-    const images = (data as { name: string; id: string }[])
-      .filter((file) => file.name && file.id)
-      .sort((a, b) => {
-        if (a.name === product.frontImageName) return -1;
-        if (b.name === product.frontImageName) return 1;
-        return a.name.localeCompare(b.name);
-      })
-      .map((file, index) => {
-        const storagePath = `${folder}/${file.name}`;
-        const { data: publicUrl } = supabase.storage.from(bucket).getPublicUrl(storagePath);
-        return {
-          id: `${product.id}-storage-${index}`,
-          productId: product.id,
-          storagePath,
-          imageUrl: publicUrl.publicUrl,
-          altText: `${product.name} image ${index + 1}`,
-          isPrimary: index === 0,
-          displayOrder: index + 1,
-        };
-      });
-
-    return images.length ? { ...product, images } : product;
-  }));
+  return withStorageImages(supabase, exampleCatalogue);
 }
 
 /**
@@ -168,5 +189,11 @@ export async function getCatalogueProductBySlug(slug: string): Promise<Product |
   const products = await getCatalogueProducts();
   const fromCatalogue = products.find((product) => product.isActive && product.slug === slug);
   if (fromCatalogue) return fromCatalogue;
-  return exampleCatalogue.find((product) => product.isActive && product.slug === slug);
+  const fixture = exampleCatalogue.find((product) => product.isActive && product.slug === slug);
+  if (!fixture) return undefined;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return fixture;
+  const [withImages] = await withStorageImages(createClient(url, key), [fixture]);
+  return withImages;
 }
