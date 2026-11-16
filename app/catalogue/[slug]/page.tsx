@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProductBySlug } from '../../../src/catalogue/catalogue';
 import { exampleCatalogue } from '../../../src/catalogue/fixtures';
-import { getCatalogueProducts } from '../../../src/catalogue/storage';
+import { getCatalogueProductBySlug } from '../../../src/catalogue/storage';
 import SiteNav from '../../../src/components/site-nav';
 import SiteFooter from '../../../src/components/site-footer';
 
@@ -14,7 +13,7 @@ export function generateStaticParams() {
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = getProductBySlug(await getCatalogueProducts(), slug);
+  const product = await getCatalogueProductBySlug(slug);
   if (!product) notFound();
 
   return (

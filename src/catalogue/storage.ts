@@ -158,3 +158,15 @@ async function getFixtureProducts(supabase: any): Promise<Product[]> {
     return images.length ? { ...product, images } : product;
   }));
 }
+
+/**
+ * Looks up a single product by slug. Uses the DB-backed catalogue first, then
+ * falls back to the built-in core packages (classic/signature/premium) so that
+ * links hard-coded across the site never 404 when the DB is missing a row.
+ */
+export async function getCatalogueProductBySlug(slug: string): Promise<Product | undefined> {
+  const products = await getCatalogueProducts();
+  const fromCatalogue = products.find((product) => product.isActive && product.slug === slug);
+  if (fromCatalogue) return fromCatalogue;
+  return exampleCatalogue.find((product) => product.isActive && product.slug === slug);
+}
