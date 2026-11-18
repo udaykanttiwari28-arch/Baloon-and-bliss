@@ -72,6 +72,7 @@ function BalanceChip({ total, paid }: { total: number; paid: number }) {
 export default function AdminPage() {
   const supabase = useMemo(() => { try { return getBrowserSupabase(); } catch { return null; } }, []);
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [loginEmail, setLoginEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -94,12 +95,30 @@ export default function AdminPage() {
     else setEnquiries((data ?? []) as Enquiry[]);
   }
 
+  async function checkAdminAndLoad(userId: string, email: string) {
+    if (!supabase) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', userId)
+      .single();
+    if (data?.is_admin) {
+      setIsAdmin(true);
+      setSessionEmail(email);
+      void loadEnquiries();
+    } else {
+      // Signed in but not admin — sign them out silently
+      await supabase.auth.signOut();
+      setMessage('Access denied. This account does not have admin privileges.');
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     if (!supabase) { setLoading(false); return; }
     supabase.auth.getSession().then(({ data }) => {
-      setSessionEmail(data.session?.user.email ?? null);
       setLoading(false);
-      if (data.session) void loadEnquiries();
+      if (data.session) void checkAdminAndLoad(data.session.user.id, data.session.user.email ?? '');
     });
   }, [supabase]);
 
@@ -107,8 +126,8 @@ export default function AdminPage() {
     e.preventDefault(); if (!supabase) return;
     setLoading(true); setMessage('');
     const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
-    if (error) setMessage('Login failed. Check your credentials.');
-    else { setSessionEmail(data.user?.email ?? null); await loadEnquiries(); }
+    if (error) { setMessage('Login failed. Check your credentials.'); setLoading(false); return; }
+    await checkAdminAndLoad(data.user.id, data.user.email ?? '');
     setLoading(false);
   }
 
@@ -136,7 +155,7 @@ export default function AdminPage() {
     </div>
   );
 
-  if (!sessionEmail) return (
+  if (!sessionEmail || !isAdmin) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f5f0f3', padding: 20 }}>
       <div className="admin-login">
         <p className="eyebrow">Private workspace</p>
